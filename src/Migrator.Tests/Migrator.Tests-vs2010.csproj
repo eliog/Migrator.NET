@@ -85,7 +85,6 @@
     <Compile Include="Providers\SqlServer2005TransformationProviderTest.cs" />
     <Compile Include="Providers\MySqlTransformationProviderTest.cs" />
     <Compile Include="Providers\PostgreSQLTransformationProviderTest.cs" />
-    <Compile Include="Providers\SQLiteTransformationProviderTest.cs" />
     <Compile Include="Providers\SqlServerCeTransformationProviderTest.cs" />
     <Compile Include="Providers\SqlServerTransformationProviderTest.cs" />
     <Compile Include="Providers\TransformationProviderBase.cs" />
@@ -96,20 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Migrator\Migrator-vs2008.csproj">
-      <Project>{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}</Project>
-      <Name>Migrator-vs2008</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Migrator.Framework\Migrator.Framework-vs2008.csproj">
-      <Project>{5270F048-E580-486C-B14C-E5B9F6E539D4}</Project>
-      <Name>Migrator.Framework-vs2008</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Migrator.Providers\Migrator.Providers-vs2008.csproj">
-      <Project>{D58C68E4-D789-40F7-9078-C9F587D4363C}</Project>
-      <Name>Migrator.Providers-vs2008</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\config\app.config">
@@ -142,6 +127,20 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Migrator.Framework\Migrator.Framework-vs2010.csproj">
+      <Project>{5270f048-e580-486c-b14c-e5b9f6e539d4}</Project>
+      <Name>Migrator.Framework-vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Migrator.Providers\Migrator.Providers-vs2010.csproj">
+      <Project>{d58c68e4-d789-40f7-9078-c9f587d4363c}</Project>
+      <Name>Migrator.Providers-vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Migrator\Migrator-vs2010.csproj">
+      <Project>{1fee70a4-aad7-4c60-be60-3f7dc03a8c4d}</Project>
+      <Name>Migrator-vs2010</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

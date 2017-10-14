@@ -58,10 +58,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Npgsql\net-2.0\Mono.Security.dll</HintPath>
@@ -98,18 +94,10 @@
     <Compile Include="NoOpTransformationProvider.cs" />
     <Compile Include="Impl\PostgreSQL\PostgreSQLDialect.cs" />
     <Compile Include="Impl\PostgreSQL\PostgreSQLTransformationProvider.cs" />
-    <Compile Include="Impl\SQLite\SQLiteDialect.cs" />
-    <Compile Include="Impl\SQLite\SQLiteTransformationProvider.cs" />
     <Compile Include="Impl\SqlServer\SqlServerDialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerTransformationProvider.cs" />
     <Compile Include="TransformationProvider.cs" />
     <Compile Include="TypeNames.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Migrator.Framework\Migrator.Framework-vs2008.csproj">
-      <Project>{5270F048-E580-486C-B14C-E5B9F6E539D4}</Project>
-      <Name>Migrator.Framework-vs2008</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
@@ -143,6 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MigratorDotNet.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Migrator.Framework\Migrator.Framework-vs2010.csproj">
+      <Project>{5270f048-e580-486c-b14c-e5b9f6e539d4}</Project>
+      <Name>Migrator.Framework-vs2010</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
