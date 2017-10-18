@@ -17,7 +17,7 @@ namespace Migrator.Providers
         {
 
         }
-
+        public int CommandTimeout { get; set; }
         public virtual ILogger Logger
         {
             get { return null; }
