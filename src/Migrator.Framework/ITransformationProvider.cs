@@ -1,6 +1,6 @@
 using System;
-using System.Data;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Migrator.Framework
 {
@@ -9,7 +9,6 @@ namespace Migrator.Framework
     /// </summary>
     public interface ITransformationProvider : IDisposable
     {
-
         /// <summary>
         /// Get this provider or a NoOp provider if you are not running in the context of 'provider'.
         /// </summary>
@@ -110,7 +109,7 @@ namespace Migrator.Framework
         /// <summary>
         /// Add a foreign key constraint
         /// </summary>
-        /// 
+        ///
         /// <param name="name">The name of the foreign key. e.g. FK_TABLE_REF</param>
         /// <param name="foreignTable">The table that the foreign key will be created in (eg. Table.FK_id)</param>
         /// <param name="foreignColumn">The column that is the foreign key (eg. FK_id)</param>
