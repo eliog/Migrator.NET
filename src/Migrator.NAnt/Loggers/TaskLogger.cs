@@ -9,12 +9,12 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Collections.Generic;
 using Migrator.Framework;
 using NAnt.Core;
+using System;
+using System.Collections.Generic;
 
 namespace Migrator.NAnt.Loggers
 {
@@ -23,7 +23,7 @@ namespace Migrator.NAnt.Loggers
 	/// </summary>
 	public class TaskLogger : ILogger
 	{
-		readonly Task _task;
+		private readonly Task _task;
 
 		public TaskLogger(Task task)
 		{
@@ -111,7 +111,7 @@ namespace Migrator.NAnt.Loggers
 			LogInfo("Current version : {0}", currentVersion);
 		}
 
-		void LogExceptionDetails(Exception ex)
+		private void LogExceptionDetails(Exception ex)
 		{
 			LogInfo("{0}", ex.Message);
 			LogInfo("{0}", ex.StackTrace);
@@ -129,7 +129,7 @@ namespace Migrator.NAnt.Loggers
 			LogInfo("Migrated to version {0}", currentVersion);
 		}
 
-		string LatestVersion(List<long> versions)
+		private string LatestVersion(List<long> versions)
 		{
 			if (versions.Count > 0)
 			{

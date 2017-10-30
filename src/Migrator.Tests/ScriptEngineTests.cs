@@ -1,7 +1,7 @@
-using System.IO;
-using System.Reflection;
 using Migrator.Compile;
 using NUnit.Framework;
+using System.IO;
+using System.Reflection;
 
 namespace Migrator.Tests
 {

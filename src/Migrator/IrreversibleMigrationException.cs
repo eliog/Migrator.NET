@@ -9,21 +9,21 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 using System;
 
 namespace Migrator
 {
-    /// <summary>
-    /// Exception thrown in a migration <c>Down()</c> method
-    /// when changes can't be undone.
-    /// </summary>
+	/// <summary>
+	/// Exception thrown in a migration <c>Down()</c> method
+	/// when changes can't be undone.
+	/// </summary>
 #if NETSTANDARD
 #else
     [Serializable]
 #endif
-    public class IrreversibleMigrationException : Exception
+	public class IrreversibleMigrationException : Exception
 	{
 		public IrreversibleMigrationException() : base("Irreversible migration")
 		{

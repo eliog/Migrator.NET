@@ -1,7 +1,7 @@
-﻿using System.Data;
-using Migrator.Framework;
+﻿using Migrator.Framework;
 using NUnit.Framework;
 using Rhino.Mocks;
+using System.Data;
 
 namespace Migrator.Tests
 {
@@ -16,9 +16,9 @@ namespace Migrator.Tests
 			provider = MockRepository.GenerateStub<ITransformationProvider>();
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
-		ITransformationProvider provider;
+		private ITransformationProvider provider;
 
 		[Test]
 		public void AddManyToManyJoiningTable_AddsPrimaryKey()
@@ -30,7 +30,7 @@ namespace Migrator.Tests
 			Assert.AreEqual("PK_TestScenarioVersions", args[0]);
 			Assert.AreEqual("dbo.TestScenarioVersions", args[1]);
 
-			var columns = (string[]) args[2];
+			var columns = (string[])args[2];
 
 			Assert.Contains("TestScenarioId", columns);
 			Assert.Contains("VersionId", columns);
@@ -41,9 +41,9 @@ namespace Migrator.Tests
 		{
 			provider.AddManyToManyJoiningTable("dbo", "TestScenarios", "Id", "Versions", "Id");
 
-			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[]) null))[0];
+			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[])null))[0];
 
-            Column lhsColumn = ((IDbField[]) args[1])[0] as Column;
+			Column lhsColumn = ((IDbField[])args[1])[0] as Column;
 
 			Assert.AreEqual(lhsColumn.Name, "TestScenarioId");
 			Assert.AreEqual(DbType.Guid, lhsColumn.Type);
@@ -79,9 +79,9 @@ namespace Migrator.Tests
 		{
 			provider.AddManyToManyJoiningTable("dbo", "TestScenarios", "Id", "Versions", "Id");
 
-			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[]) null))[0];
+			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[])null))[0];
 
-			Column rhsColumn = ((IDbField[]) args[1])[1] as Column;
+			Column rhsColumn = ((IDbField[])args[1])[1] as Column;
 
 			Assert.AreEqual(rhsColumn.Name, "VersionId");
 			Assert.AreEqual(DbType.Guid, rhsColumn.Type);
@@ -117,7 +117,7 @@ namespace Migrator.Tests
 		{
 			provider.AddManyToManyJoiningTable("dbo", "TestScenarios", "Id", "Versions", "Id");
 
-			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[]) null))[0];
+			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[])null))[0];
 
 			Assert.AreEqual("dbo.TestScenarioVersions", args[0]);
 		}

@@ -1,6 +1,5 @@
-using System;
-using System.Data;
 using Migrator.Framework;
+using System.Data;
 
 namespace Migrator.Providers.Mysql
 {

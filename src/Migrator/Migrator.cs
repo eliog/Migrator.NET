@@ -9,15 +9,15 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
+using Migrator.Framework.Loggers;
+using Migrator.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Migrator.Framework;
-using Migrator.Framework.Loggers;
-using Migrator.Providers;
 
 namespace Migrator
 {
@@ -26,12 +26,12 @@ namespace Migrator
 	/// </summary>
 	public class Migrator
 	{
-		readonly MigrationLoader _migrationLoader;
-		readonly ITransformationProvider _provider;
+		private readonly MigrationLoader _migrationLoader;
+		private readonly ITransformationProvider _provider;
 
-		string[] _args;
+		private string[] _args;
 		protected bool _dryrun;
-		ILogger _logger = new Logger(false);
+		private ILogger _logger = new Logger(false);
 
 		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
 			: this(provider, connectionString, defaultSchema, migrationAssembly, false)
@@ -158,7 +158,8 @@ namespace Migrator
 			set { _dryrun = value; }
 		}
 
-		public long AssemblyLastMigrationVersion {
+		public long AssemblyLastMigrationVersion
+		{
 			get { return _migrationLoader.LastVersion; }
 		}
 

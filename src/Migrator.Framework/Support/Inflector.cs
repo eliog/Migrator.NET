@@ -9,7 +9,7 @@ namespace Migrator.Framework.Support
 		private static readonly List<Rule> plurals = new List<Rule>();
 		private static readonly List<Rule> singulars = new List<Rule>();
 		private static readonly List<string> uncountables = new List<string>();
-		
+
 		private Inflector()
 		{
 		}

@@ -1,8 +1,8 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Migrator.Framework;
 using System.Linq;
+using System.Reflection;
 
 namespace Migrator
 {
@@ -12,8 +12,8 @@ namespace Migrator
 	/// </summary>
 	public class MigrationLoader
 	{
-		readonly List<Type> _migrationsTypes = new List<Type>();
-		readonly ITransformationProvider _provider;
+		private readonly List<Type> _migrationsTypes = new List<Type>();
+		private readonly ITransformationProvider _provider;
 
 		public MigrationLoader(ITransformationProvider provider, Assembly migrationAssembly, bool trace)
 		{
@@ -100,8 +100,6 @@ namespace Migrator
 			var migrations = new List<Type>();
 			foreach (Type t in asm.GetExportedTypes())
 			{
-				
-
 #if NETSTANDARD
 				var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 				if (attrib != null && typeof(IMigration).GetTypeInfo().IsAssignableFrom(t) && !attrib.Ignore)
@@ -115,8 +113,6 @@ namespace Migrator
 					migrations.Add(t);
 				}
 #endif
-
-
 			}
 
 			migrations.Sort(new MigrationTypeComparer(true));

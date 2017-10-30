@@ -9,7 +9,7 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 using System.Data;
 
@@ -18,7 +18,7 @@ namespace Migrator.Framework
 	/// <summary>
 	/// Represents a table column.
 	/// </summary>
-    public class Column : IColumn, IDbField
+	public class Column : IColumn, IDbField
 	{
 		public Column(string name)
 		{

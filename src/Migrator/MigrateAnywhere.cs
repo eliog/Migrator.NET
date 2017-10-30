@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Migrator.Framework;
 using Migrator.Providers;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Migrator
@@ -11,7 +11,7 @@ namespace Migrator
 	/// </summary>
 	public class MigrateAnywhere : BaseMigrate
 	{
-		bool _goForward;
+		private bool _goForward;
 
 		public MigrateAnywhere(List<long> availableMigrations, ITransformationProvider provider, ILogger logger)
 			: base(availableMigrations, provider, logger)
@@ -46,7 +46,7 @@ namespace Migrator
 
 		public override bool Continue(long version)
 		{
-			// If we're going backwards and our current is less than the target, 
+			// If we're going backwards and our current is less than the target,
 			// reverse direction.  Also, start over at zero to make sure we catch
 			// any merged migrations that are less than the current target.
 			if (!_goForward && version >= Current)
@@ -56,7 +56,7 @@ namespace Migrator
 				Iterate();
 			}
 
-			// We always finish on going forward. So continue if we're still 
+			// We always finish on going forward. So continue if we're still
 			// going backwards, or if there are no migrations left in the forward direction.
 			return !_goForward || Current <= version;
 		}
@@ -70,7 +70,6 @@ namespace Migrator
 			var attr = (MigrationAttribute) Attribute.GetCustomAttribute(migration.GetType(), typeof (MigrationAttribute));
 #endif
 
-
 			if (_provider.AppliedMigrations.Contains(attr.Version))
 			{
 				RemoveMigration(migration, attr);
@@ -81,14 +80,14 @@ namespace Migrator
 			}
 		}
 
-		void ApplyMigration(IMigration migration, MigrationAttribute attr)
+		private void ApplyMigration(IMigration migration, MigrationAttribute attr)
 		{
 			// we're adding this one
 			_logger.MigrateUp(Current, migration.Name);
-			if (! DryRun)
+			if (!DryRun)
 			{
 				var tProvider = _provider as TransformationProvider;
-				if (tProvider != null) 
+				if (tProvider != null)
 					tProvider.CurrentMigration = migration;
 
 				migration.Up();
@@ -98,11 +97,11 @@ namespace Migrator
 			}
 		}
 
-		void RemoveMigration(IMigration migration, MigrationAttribute attr)
+		private void RemoveMigration(IMigration migration, MigrationAttribute attr)
 		{
 			// we're removing this one
 			_logger.MigrateDown(Current, migration.Name);
-			if (! DryRun)
+			if (!DryRun)
 			{
 				var tProvider = _provider as TransformationProvider;
 				if (tProvider != null)

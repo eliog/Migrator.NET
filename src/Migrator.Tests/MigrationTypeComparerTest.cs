@@ -9,23 +9,23 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Collections.Generic;
 using Migrator.Framework;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace Migrator.Tests
 {
 	[TestFixture]
 	public class MigrationTypeComparerTest
 	{
-		readonly Type[] _types = {
-		                         	typeof (Migration1),
-		                         	typeof (Migration2),
-		                         	typeof (Migration3)
-		                         };
+		private readonly Type[] _types = {
+									 typeof (Migration1),
+									 typeof (Migration2),
+									 typeof (Migration3)
+								 };
 
 		[Migration(1, Ignore = true)]
 		internal class Migration1 : Migration

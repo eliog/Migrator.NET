@@ -1,8 +1,8 @@
-using System.Reflection;
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
 using NUnit.Framework;
 using NUnit.Mocks;
+using System.Reflection;
 
 namespace Migrator.Tests
 {
@@ -17,13 +17,13 @@ namespace Migrator.Tests
 			SetUpCurrentVersion(0, false);
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
-		MigrationLoader _migrationLoader;
+		private MigrationLoader _migrationLoader;
 
-		void SetUpCurrentVersion(int version, bool assertRollbackIsCalled)
+		private void SetUpCurrentVersion(int version, bool assertRollbackIsCalled)
 		{
-			var providerMock = new DynamicMock(typeof (ITransformationProvider));
+			var providerMock = new DynamicMock(typeof(ITransformationProvider));
 
 			providerMock.SetReturnValue("get_CurrentVersion", version);
 			providerMock.SetReturnValue("get_Logger", new Logger(false));
@@ -32,22 +32,21 @@ namespace Migrator.Tests
 			else
 				providerMock.ExpectNoCall("Rollback");
 
-			_migrationLoader = new MigrationLoader((ITransformationProvider) providerMock.MockInstance, Assembly.GetExecutingAssembly(), true);
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.FirstMigration));
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.SecondMigration));
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.ThirdMigration));
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.ForthMigration));
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.BadMigration));
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.SixthMigration));
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.NonIgnoredMigration));
+			_migrationLoader = new MigrationLoader((ITransformationProvider)providerMock.MockInstance, Assembly.GetExecutingAssembly(), true);
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.FirstMigration));
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.SecondMigration));
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.ThirdMigration));
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.ForthMigration));
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.BadMigration));
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.SixthMigration));
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.NonIgnoredMigration));
 		}
 
 		[Test]
-		[ExpectedException(typeof (DuplicatedVersionException))]
 		public void CheckForDuplicatedVersion()
 		{
-			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.FirstMigration));
-			_migrationLoader.CheckForDuplicatedVersion();
+			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.FirstMigration));
+			Assert.Throws<DuplicatedVersionException>(() => _migrationLoader.CheckForDuplicatedVersion());
 		}
 
 		[Test]

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 
 namespace Migrator.Framework
 {
@@ -30,6 +29,8 @@ namespace Migrator.Framework
 		/// Connection string to the database
 		/// </summary>
 		String ConnectionString { get; }
+
+		int CommandTimeout { get; set; }
 
 		/// <summary>
 		/// Logger used to log details of operations performed during migration
@@ -123,7 +124,7 @@ namespace Migrator.Framework
 		/// <summary>
 		/// Add a foreign key constraint
 		/// </summary>
-		/// 
+		///
 		/// <param name="name">The name of the foreign key. e.g. FK_TABLE_REF</param>
 		/// <param name="foreignTable">The table that the foreign key will be created in (eg. Table.FK_id)</param>
 		/// <param name="foreignColumn">The column that is the foreign key (eg. FK_id)</param>
@@ -307,7 +308,7 @@ namespace Migrator.Framework
 		/// <param name="sql">The SQL to execute.</param>
 		/// <param name="timeout">timeout</param>
 		/// <returns></returns>
-		int ExecuteNonQuery(string sql,int timeout);
+		int ExecuteNonQuery(string sql, int timeout);
 
 		int ExecuteNonQuery(string sql);
 		/// <summary>
@@ -432,7 +433,7 @@ namespace Migrator.Framework
 		/// <summary>
 		/// Remove an existing primary key
 		/// </summary>
-		/// <param name="table">The table that contains the primary key.</param>        
+		/// <param name="table">The table that contains the primary key.</param>
 		void RemovePrimaryKey(string table);
 
 		/// <summary>
@@ -545,7 +546,6 @@ namespace Migrator.Framework
 		/// <param name="schemaBuilder"></param>
 		void ExecuteSchemaBuilder(SchemaBuilder.SchemaBuilder schemaBuilder);
 
-		
 		void RemoveAllForeignKeys(string tableName, string columnName);
 
 		bool IsThisProvider(string provider);
@@ -584,7 +584,6 @@ namespace Migrator.Framework
 		/// <param name="databaseName">Name of the new target database</param>
 		void SwitchDatabase(string databaseName);
 
-
 		/// <summary>
 		/// Get a list of databases available on the server
 		/// </summary>
@@ -616,7 +615,7 @@ namespace Migrator.Framework
 		/// <param name="table">The name of the table that will get the index.</param>
 		/// <param name="columns">The name of the column or columns that are in the index.</param>
 		void AddIndex(string name, string table, params string[] columns);
-		
+
 		/// <summary>
 		/// Check to see if an index exists
 		/// </summary>
@@ -634,7 +633,7 @@ namespace Migrator.Framework
 
 		/// <summary>
 		/// Generate parameter name based on an index number
-		/// </summary>        
+		/// </summary>
 		/// <param name="index">The index number of the parameter</param>
 		string GenerateParameterName(int index);
 

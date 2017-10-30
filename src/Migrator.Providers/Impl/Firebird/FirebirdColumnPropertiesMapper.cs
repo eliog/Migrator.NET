@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Migrator.Framework;
+using System;
 using System.Collections.Generic;
-using Migrator.Framework;
 
 namespace Migrator.Providers.Impl.Firebird
 {
 	public class FirebirdColumnPropertiesMapper : ColumnPropertiesMapper
 	{
-        public FirebirdColumnPropertiesMapper(Dialect dialect, string type)
-            : base(dialect, type)
+		public FirebirdColumnPropertiesMapper(Dialect dialect, string type)
+			: base(dialect, type)
 		{
 		}
 

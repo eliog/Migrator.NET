@@ -9,12 +9,12 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using System;
+using System.Collections.Generic;
 using ILogger = Migrator.Framework.ILogger;
 
 namespace Migrator.MSBuild.Logger
@@ -24,7 +24,7 @@ namespace Migrator.MSBuild.Logger
 	/// </summary>
 	public class TaskLogger : ILogger
 	{
-		readonly Task _task;
+		private readonly Task _task;
 
 		public TaskLogger(Task task)
 		{
@@ -117,7 +117,7 @@ namespace Migrator.MSBuild.Logger
 			LogInfo("Migrated to version {0}", currentVersion);
 		}
 
-		string LatestVersion(List<long> versions)
+		private string LatestVersion(List<long> versions)
 		{
 			if (versions.Count > 0)
 			{

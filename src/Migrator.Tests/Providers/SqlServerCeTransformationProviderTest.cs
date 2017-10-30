@@ -9,14 +9,14 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Providers.SqlServer;
+using NUnit.Framework;
 using System;
 using System.Configuration;
 using System.Data.SqlServerCe;
 using System.IO;
-using Migrator.Providers.SqlServer;
-using NUnit.Framework;
 
 namespace Migrator.Tests.Providers
 {
@@ -35,15 +35,15 @@ namespace Migrator.Tests.Providers
 
 			EnsureDatabase(constr);
 
-            _provider = new SqlServerCeTransformationProvider(new SqlServerCeDialect(), constr, "default", null);
+			_provider = new SqlServerCeTransformationProvider(new SqlServerCeDialect(), constr, "default", null);
 			_provider.BeginTransaction();
 
 			AddDefaultTable();
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
-		void EnsureDatabase(string constr)
+		private void EnsureDatabase(string constr)
 		{
 			var connection = new SqlCeConnection(constr);
 			if (!File.Exists(connection.Database))

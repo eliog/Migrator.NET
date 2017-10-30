@@ -1,9 +1,8 @@
+using Migrator.Framework;
+using Migrator.Framework.SchemaBuilder;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Migrator.Framework;
-using Migrator.Framework.SchemaBuilder;
-
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 namespace Migrator.Providers
@@ -15,7 +14,7 @@ namespace Migrator.Providers
 	{
 		public static readonly NoOpTransformationProvider Instance = new NoOpTransformationProvider();
 
-		NoOpTransformationProvider()
+		private NoOpTransformationProvider()
 		{
 		}
 
@@ -34,6 +33,8 @@ namespace Migrator.Providers
 			get { return String.Empty; }
 		}
 
+		public int CommandTimeout { get; set; }
+
 		public virtual ILogger Logger
 		{
 			get { return null; }
@@ -49,7 +50,7 @@ namespace Migrator.Providers
 		{
 			return null;
 		}
-	   
+
 		public int Insert(string table, string[] columns, object[] values)
 		{
 			return 0;
@@ -395,7 +396,6 @@ namespace Migrator.Providers
 
 		public void RemoveAllForeignKeys(string tableName, string columnName)
 		{
-			
 		}
 
 		public bool IsThisProvider(string provider)
@@ -425,7 +425,6 @@ namespace Migrator.Providers
 
 		public void SwitchDatabase(string databaseName)
 		{
-			
 		}
 
 		public List<string> GetDatabases()
@@ -440,17 +439,14 @@ namespace Migrator.Providers
 
 		public void CreateDatabases(string databaseName)
 		{
-			
 		}
 
 		public void DropDatabases(string databaseName)
 		{
-			
 		}
 
 		public void AddIndex(string table, Index index)
 		{
-			
 		}
 
 		public void Dispose()

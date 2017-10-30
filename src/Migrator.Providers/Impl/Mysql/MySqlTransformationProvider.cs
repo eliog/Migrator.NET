@@ -1,14 +1,13 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
-
-using Migrator.Framework;
 
 namespace Migrator.Providers.Mysql
 {
 	/// <summary>
 	/// MySql transformation provider
-	/// </summary>    
+	/// </summary>
 	public class MySqlTransformationProvider : TransformationProvider
 	{
 		public MySqlTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
@@ -37,9 +36,9 @@ namespace Migrator.Providers.Mysql
 		public override void RemoveAllIndexes(string table)
 		{
 			string qry = string.Format(@"SELECT k.TABLE_NAME, i.CONSTRAINT_NAME, i.CONSTRAINT_TYPE
-                                                    FROM information_schema.KEY_COLUMN_USAGE k 
-                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i 
-                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME 
+                                                    FROM information_schema.KEY_COLUMN_USAGE k
+                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME
                                                     WHERE k.REFERENCED_TABLE_SCHEMA='{0}' AND
                                                     (k.REFERENCED_TABLE_NAME='{1}') OR (k.TABLE_NAME='{1}')", GetDatabase(), table);
 
@@ -73,18 +72,18 @@ namespace Migrator.Providers.Mysql
 		public override void RemoveAllForeignKeys(string tableName, string columnName)
 		{
 			string qry = string.Format(@"SELECT k.TABLE_NAME, i.CONSTRAINT_NAME
-                                                    FROM information_schema.KEY_COLUMN_USAGE k 
-                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i 
-                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME 
+                                                    FROM information_schema.KEY_COLUMN_USAGE k
+                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME
                                                     WHERE k.REFERENCED_TABLE_SCHEMA='{0}' AND  i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND
                                                     (k.REFERENCED_TABLE_NAME='{1}' AND REFERENCED_COLUMN_NAME='{2}') OR (k.TABLE_NAME='{1}' AND COLUMN_NAME='{2}')", GetDatabase(), tableName, columnName);
 
 			if (string.IsNullOrEmpty(columnName))
 			{
 				qry = string.Format(@"SELECT k.TABLE_NAME, i.CONSTRAINT_NAME
-                                                    FROM information_schema.KEY_COLUMN_USAGE k 
-                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i 
-                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME 
+                                                    FROM information_schema.KEY_COLUMN_USAGE k
+                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME
                                                     WHERE k.REFERENCED_TABLE_SCHEMA='{0}' AND i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND
                                                     (k.REFERENCED_TABLE_NAME='{1}') OR (k.TABLE_NAME='{1}')", GetDatabase(), tableName);
 			}
@@ -138,10 +137,10 @@ namespace Migrator.Providers.Mysql
 				return false;
 
 			string sqlConstraint = string.Format(@"SELECT distinct i.CONSTRAINT_NAME
-                                                    FROM information_schema.TABLE_CONSTRAINTS i 
-                                                    INNER JOIN information_schema.KEY_COLUMN_USAGE k 
-                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME 
-                                                    WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' 
+                                                    FROM information_schema.TABLE_CONSTRAINTS i
+                                                    INNER JOIN information_schema.KEY_COLUMN_USAGE k
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                                    WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY'
                                                     AND i.TABLE_SCHEMA = '{1}'
                                                     AND i.TABLE_NAME = '{0}';", table, GetDatabase());
 
@@ -179,7 +178,7 @@ namespace Migrator.Providers.Mysql
 						};
 						//var cols = reader.GetString(7);
 						//cols = cols.Substring(1, cols.Length - 2);
-						//idx.KeyColumns = cols.Split(',');                        
+						//idx.KeyColumns = cols.Split(',');
 						retVal.Add(idx);
 					}
 				}
@@ -300,7 +299,6 @@ namespace Migrator.Providers.Mysql
 				ExecuteNonQuery(String.Format("ALTER TABLE {0} CHANGE {1} {2} {3}", tableName, QuoteColumnNameIfRequired(oldColumnName), QuoteColumnNameIfRequired(newColumnName), definition));
 				if (dropPrimary)
 					ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD PRIMARY KEY({1});", tableName, QuoteColumnNameIfRequired(newColumnName)));
-
 			}
 		}
 

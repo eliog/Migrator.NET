@@ -9,14 +9,14 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
+using Migrator.Providers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Migrator.Framework;
-using Migrator.Providers;
 
 namespace Migrator.Tools
 {
@@ -46,23 +46,23 @@ namespace Migrator.Tools
 				var columnLines = new List<string>();
 				foreach (Column column in _provider.GetColumns(table))
 				{
-					if (column.Size>0 && column.DefaultValue!=null)
+					if (column.Size > 0 && column.DefaultValue != null)
 						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3}, \"{4}\")", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));
 					else if (column.Size > 0)
 						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3})", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty)));
 					else if (column.DefaultValue != null)
-						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, \"{3}\")", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));                    
+						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, \"{3}\")", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));
 					else
 						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2})", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty)));
 				}
 				foreach (var constraint in _provider.GetForeignKeyConstraints(table))
 				{
-					columnLines.Add(string.Format("\t\t\tnew ForeignKeyConstraint(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}})", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns)));                    
+					columnLines.Add(string.Format("\t\t\tnew ForeignKeyConstraint(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}})", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns)));
 				}
 				writer.WriteLine(string.Join(string.Format(",{0}", Environment.NewLine), columnLines.ToArray()));
 				writer.WriteLine("\t\t);");
-				
-				foreach (Index index in _provider.GetIndexes(table).Where( x => !x.PrimaryKey))
+
+				foreach (Index index in _provider.GetIndexes(table).Where(x => !x.PrimaryKey))
 				{
 					if (index.IncludeColumns == null)
 					{
@@ -97,7 +97,7 @@ namespace Migrator.Tools
 				{
 					writer.WriteLine("\t\tDatabase.AddForeignKey(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}});", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns));
 					writer.WriteLine("");
-				}                                                                
+				}
 			}*/
 
 			writer.WriteLine("");
@@ -141,7 +141,7 @@ namespace Migrator.Tools
 
 		public void DumpTo(string file)
 		{
-			using (var fs=new FileStream(file, FileMode.Create))
+			using (var fs = new FileStream(file, FileMode.Create))
 			using (var writer = new StreamWriter(fs))
 			{
 				writer.Write(Dump());

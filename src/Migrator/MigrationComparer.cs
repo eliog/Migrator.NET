@@ -9,11 +9,11 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
-using Migrator.Framework;
 using System.Reflection;
 
 namespace Migrator
@@ -23,7 +23,7 @@ namespace Migrator
 	/// </summary>
 	public class MigrationTypeComparer : IComparer<Type>
 	{
-		readonly bool _ascending = true;
+		private readonly bool _ascending = true;
 
 		public MigrationTypeComparer(bool ascending)
 		{

@@ -1,8 +1,7 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
-using Migrator.Framework;
 
 namespace Migrator.Providers
 {
@@ -11,17 +10,17 @@ namespace Migrator.Providers
 	/// </summary>
 	public abstract class Dialect : IDialect
 	{
-		readonly Dictionary<ColumnProperty, string> propertyMap = new Dictionary<ColumnProperty, string>();
-		readonly HashSet<string> reservedWords = new HashSet<string>();
-		readonly TypeNames typeNames = new TypeNames();
-		readonly List<DbType> unsignedCompatibleTypes = new List<DbType>();
+		private readonly Dictionary<ColumnProperty, string> propertyMap = new Dictionary<ColumnProperty, string>();
+		private readonly HashSet<string> reservedWords = new HashSet<string>();
+		private readonly TypeNames typeNames = new TypeNames();
+		private readonly List<DbType> unsignedCompatibleTypes = new List<DbType>();
 
 		protected Dialect()
 		{
 			RegisterProperty(ColumnProperty.Null, "NULL");
 			RegisterProperty(ColumnProperty.NotNull, "NOT NULL");
 			RegisterProperty(ColumnProperty.Unique, "UNIQUE");
-			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");            
+			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");
 		}
 
 		public virtual int MaxKeyLength
@@ -128,7 +127,7 @@ namespace Migrator.Providers
 		}
 
 		/// <summary>
-		/// Suclasses register a typename for the given type code. <c>$l</c> in the 
+		/// Suclasses register a typename for the given type code. <c>$l</c> in the
 		/// typename will be replaced by the column length (if appropriate).
 		/// </summary>
 		/// <param name="code">The typecode</param>
@@ -141,7 +140,7 @@ namespace Migrator.Providers
 		public virtual ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
-			if (! IdentityNeedsType && column.IsIdentity)
+			if (!IdentityNeedsType && column.IsIdentity)
 				type = String.Empty;
 
 			return new ColumnPropertiesMapper(this, type);
@@ -149,11 +148,11 @@ namespace Migrator.Providers
 
 		public virtual DbType GetDbTypeFromString(string type)
 		{
-			return typeNames.GetDbType(type);            
+			return typeNames.GetDbType(type);
 		}
 
 		/// <summary>
-		/// Get the name of the database type associated with the given 
+		/// Get the name of the database type associated with the given
 		/// </summary>
 		/// <param name="type">The DbType</param>
 		/// <returns>The database type name used by ddl.</returns>
@@ -169,7 +168,7 @@ namespace Migrator.Providers
 		}
 
 		/// <summary>
-		/// Get the name of the database type associated with the given 
+		/// Get the name of the database type associated with the given
 		/// </summary>
 		/// <param name="type">The DbType</param>
 		/// <returns>The database type name used by ddl.</returns>
@@ -180,7 +179,7 @@ namespace Migrator.Providers
 		}
 
 		/// <summary>
-		/// Get the name of the database type associated with the given 
+		/// Get the name of the database type associated with the given
 		/// </summary>
 		/// <param name="type">The DbType</param>
 		/// <returns>The database type name used by ddl.</returns>
@@ -206,10 +205,10 @@ namespace Migrator.Providers
 		{
 			return typeNames.GetDbType(databaseTypeName);
 		}
-		
+
 		public void RegisterProperty(ColumnProperty property, string sql)
 		{
-			if (! propertyMap.ContainsKey(property))
+			if (!propertyMap.ContainsKey(property))
 			{
 				propertyMap.Add(property, sql);
 			}
@@ -289,6 +288,5 @@ namespace Migrator.Providers
 		{
 			return unsignedCompatibleTypes.Contains(type);
 		}
-
 	}
 }

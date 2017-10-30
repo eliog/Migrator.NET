@@ -16,12 +16,12 @@ namespace Migrator.Providers.Utility
 			}
 		}
 
-		static void DropAllTables(SqlConnection connection)
+		private static void DropAllTables(SqlConnection connection)
 		{
 			ExecuteForEachTable(connection, "DROP TABLE ?");
 		}
 
-		static void RemoveAllForeignKeys(SqlConnection connection)
+		private static void RemoveAllForeignKeys(SqlConnection connection)
 		{
 			using (
 				var dropConstraintsCommand =
@@ -56,7 +56,7 @@ CLOSE @Cursor DEALLOCATE @Cursor",
 			}
 		}
 
-		static void ExecuteForEachTable(SqlConnection connection, string command)
+		private static void ExecuteForEachTable(SqlConnection connection, string command)
 		{
 			using (var forEachCommand = new SqlCommand("sp_MSforeachtable", connection))
 			{

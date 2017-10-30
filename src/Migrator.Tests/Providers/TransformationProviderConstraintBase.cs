@@ -1,6 +1,6 @@
-using System.Data;
 using Migrator.Framework;
 using NUnit.Framework;
+using System.Data;
 
 namespace Migrator.Tests.Providers
 {
@@ -128,8 +128,8 @@ namespace Migrator.Tests.Providers
 		public void AddTableWithCompoundPrimaryKey()
 		{
 			_provider.AddTable("Test",
-			                   new Column("PersonId", DbType.Int32, ColumnProperty.PrimaryKey),
-			                   new Column("AddressId", DbType.Int32, ColumnProperty.PrimaryKey)
+							   new Column("PersonId", DbType.Int32, ColumnProperty.PrimaryKey),
+							   new Column("AddressId", DbType.Int32, ColumnProperty.PrimaryKey)
 				);
 			Assert.IsTrue(_provider.TableExists("Test"), "Table doesn't exist");
 			Assert.IsTrue(_provider.PrimaryKeyExists("Test", "PK_Test"), "Constraint doesn't exist");
@@ -139,9 +139,9 @@ namespace Migrator.Tests.Providers
 		public void AddTableWithCompoundPrimaryKeyShouldKeepNullForOtherProperties()
 		{
 			_provider.AddTable("Test",
-			                   new Column("PersonId", DbType.Int32, ColumnProperty.PrimaryKey),
-			                   new Column("AddressId", DbType.Int32, ColumnProperty.PrimaryKey),
-			                   new Column("Name", DbType.String, 30, ColumnProperty.Null)
+							   new Column("PersonId", DbType.Int32, ColumnProperty.PrimaryKey),
+							   new Column("AddressId", DbType.Int32, ColumnProperty.PrimaryKey),
+							   new Column("Name", DbType.String, 30, ColumnProperty.Null)
 				);
 			Assert.IsTrue(_provider.TableExists("Test"), "Table doesn't exist");
 			Assert.IsTrue(_provider.PrimaryKeyExists("Test", "PK_Test"), "Constraint doesn't exist");

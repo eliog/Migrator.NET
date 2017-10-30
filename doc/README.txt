@@ -10,12 +10,10 @@ Licensed under MPL 1.1 : http://www.mozilla.org/MPL/
 == Supported Database
 * MySQL (5.0, 5.1)
 * PostgreSQL
-* SQLite (tested on Mono)
 * SQL Server (2000, 2005)
 * SQL Server CE (3.5)
 
 == Untested Databases but in there
-* Oracle
 * Firebird
 * Informix
 * DB2
@@ -40,9 +38,7 @@ To run tests:
 You should have a database installed and setup:
 * MySql
 * SQL Server
-* Oracle
 * PostgreSQL
-* or you can use SQLite with no setup
 You can Test on each engine or change those by changing the 'exclude' properties in a nant build
 file called 'local.properties'. To change the database connection strings see config\app.config. You
 can make your own local version called 'local.config' to override these

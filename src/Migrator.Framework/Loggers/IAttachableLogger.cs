@@ -9,12 +9,12 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 namespace Migrator.Framework.Loggers
 {
 	/// <summary>
-	/// ILogger interface. 
+	/// ILogger interface.
 	/// Implicit in this interface is that the logger will delegate actual
 	/// logging to the <see cref="ILogWriter"/>(s) that have been attached
 	/// </summary>

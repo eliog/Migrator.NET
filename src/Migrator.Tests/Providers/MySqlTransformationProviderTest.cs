@@ -9,14 +9,14 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Configuration;
-using System.Data;
 using Migrator.Framework;
 using Migrator.Providers.Mysql;
 using NUnit.Framework;
+using System;
+using System.Configuration;
+using System.Data;
 
 namespace Migrator.Tests.Providers
 {
@@ -32,7 +32,7 @@ namespace Migrator.Tests.Providers
 			string constr = ConfigurationManager.AppSettings["MySqlConnectionString"];
 			if (constr == null)
 				throw new ArgumentNullException("MySqlConnectionString", "No config file");
-            _provider = new MySqlTransformationProvider(new MysqlDialect(), constr, "default", null);
+			_provider = new MySqlTransformationProvider(new MysqlDialect(), constr, "default", null);
 			// _provider.Logger = new Logger(true, new ConsoleWriter());
 
 			AddDefaultTable();
@@ -44,7 +44,7 @@ namespace Migrator.Tests.Providers
 			DropTestTables();
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
 		// [Test,Ignore("MySql doesn't support check constraints")]
 		public override void CanAddCheckConstraint()
@@ -55,8 +55,8 @@ namespace Migrator.Tests.Providers
 		public void AddTableWithMyISAMEngine()
 		{
 			_provider.AddTable("Test", "MyISAM",
-			                   new Column("Id", DbType.Int32, ColumnProperty.NotNull),
-			                   new Column("name", DbType.String, 50)
+							   new Column("Id", DbType.Int32, ColumnProperty.NotNull),
+							   new Column("name", DbType.String, 50)
 				);
 		}
 	}

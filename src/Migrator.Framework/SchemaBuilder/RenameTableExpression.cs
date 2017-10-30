@@ -9,14 +9,14 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 namespace Migrator.Framework.SchemaBuilder
 {
 	public class RenameTableExpression : ISchemaBuilderExpression
 	{
-		readonly string _newName;
-		readonly string _oldName;
+		private readonly string _newName;
+		private readonly string _oldName;
 
 		public RenameTableExpression(string oldName, string newName)
 		{

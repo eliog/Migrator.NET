@@ -9,11 +9,11 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System.Reflection;
 using Migrator.Providers;
 using NUnit.Framework;
+using System.Reflection;
 
 namespace Migrator.Tests
 {
@@ -22,7 +22,7 @@ namespace Migrator.Tests
 	/// </summary>
 	public abstract class MigrationsTestCase
 	{
-		Migrator _migrator;
+		private Migrator _migrator;
 
 		protected abstract TransformationProvider TransformationProvider { get; }
 		protected abstract string ConnectionString { get; }

@@ -32,7 +32,7 @@
     <property name="test.project.name" value="Migrator.Tests"/>
 
     <!-- Test related properties -->
-    <!-- To exclude tests, provide a comma separated set of exclude categories in your local.properties e.g. Oracle,SqlServer,Postgre -->
+    <!-- To exclude tests, provide a comma separated set of exclude categories in your local.properties e.g. SqlServer,Postgre -->
     <property name="tests.exclude" value=""/>
     <property name="tests.app.config" value="${dir.config}/app.config"/>
 
@@ -76,12 +76,9 @@
             <references>
                 <include name="System.dll" />
                 <include name="System.Data.dll" />
-                <include name="Mono.Data.Sqlite.dll" if="${property::exists('mono')}"/>
-                <include name="${dir.bin}/System.Data.SQLite.DLL" if="${property::exists('dotnet')}"/>
                 <include name="${dir.bin}/Migrator.Framework.dll" />
                 <include name="${dir.bin}/MySql.Data.dll" />
                 <include name="${dir.bin}/Npgsql.dll" />
-                <include name="${dir.lib}/Oracle.DataAccess.dll" />
 				<include name="${dir.lib}/System.Data.SqlServerCe.dll" />
 			</references>
 		</csc>
@@ -166,10 +163,8 @@
                 <include name="${dir.lib}/NAnt.Core.dll" />
                 <include name="${dir.lib}/log4net.dll" />
                 <include name="${dir.lib}/MySql.Data.dll" />
-                <include name="${dir.lib}/System.Data.SQLite.DLL" />
                 <include name="${dir.lib.postgre}/Npgsql.dll" />
                 <include name="${dir.lib.postgre}/Mono.Security.dll" />
-                <include name="${dir.lib}/Oracle.DataAccess.dll" />
                 <include name="${dir.lib}/System.Data.SqlServerCe.dll" />
             </fileset>
         </copy>

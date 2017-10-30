@@ -9,23 +9,22 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
+using Migrator.Framework.Loggers;
+using Migrator.Framework.SchemaBuilder;
+using Migrator.Framework.Support;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Migrator.Framework;
-using Migrator.Framework.Loggers;
-using Migrator.Framework.SchemaBuilder;
-using Migrator.Framework.Support;
-
-using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
-using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 using System.Reflection;
+using System.Text;
+using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
+using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
 
 namespace Migrator.Providers
 {
@@ -38,13 +37,13 @@ namespace Migrator.Providers
 		private string _scope;
 		protected readonly string _connectionString;
 		protected readonly string _defaultSchema;
-		readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
+		private readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
 		protected List<long> _appliedMigrations;
 		protected IDbConnection _connection;
 		protected bool _outsideConnection = false;
 		protected Dialect _dialect;
-		ILogger _logger;
-		IDbTransaction _transaction;
+		private ILogger _logger;
+		private IDbTransaction _transaction;
 
 		protected TransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
 		{
@@ -53,6 +52,7 @@ namespace Migrator.Providers
 			_defaultSchema = defaultSchema;
 			_logger = new Logger(false);
 			_scope = scope;
+			CommandTimeout = 60;
 		}
 
 		protected TransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope)
@@ -63,6 +63,7 @@ namespace Migrator.Providers
 			_defaultSchema = defaultSchema;
 			_logger = new Logger(false);
 			_scope = scope;
+			CommandTimeout = 60;
 		}
 
 		public IMigration CurrentMigration { get; set; }
@@ -86,6 +87,8 @@ namespace Migrator.Providers
 		}
 
 		public string ConnectionString { get { return _connectionString; } }
+
+		public int CommandTimeout { get; set; }
 
 		/// <summary>
 		/// Returns the event logger
@@ -664,7 +667,6 @@ namespace Migrator.Providers
 			}
 		}
 
-
 		/// <summary>
 		/// <see cref="ITransformationProvider.AddForeignKey(string, string, string, string, string)">
 		/// AddForeignKey(string, string, string, string, string)
@@ -1060,7 +1062,6 @@ namespace Migrator.Providers
 
 				int paramCount = 0;
 
-
 				foreach (object value in values)
 				{
 					IDbDataParameter parameter = command.CreateParameter();
@@ -1086,7 +1087,6 @@ namespace Migrator.Providers
 
 					paramCount++;
 				}
-
 
 				Logger.Trace(command.CommandText);
 				return command.ExecuteNonQuery();
@@ -1174,7 +1174,6 @@ namespace Migrator.Providers
 		public virtual int Delete(string table, string[] whereColumns = null, object[] whereValues = null)
 		{
 			if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
-
 
 			if (null == whereColumns || null == whereValues)
 			{
@@ -1325,7 +1324,7 @@ namespace Migrator.Providers
 
 		public virtual bool IsMigrationApplied(long version, string scope)
 		{
-			var value = SelectScalar("Version", _schemaInfotable, new[] {"Scope", "Version" }, new object[] {scope, version});
+			var value = SelectScalar("Version", _schemaInfotable, new[] { "Scope", "Version" }, new object[] { scope, version });
 			return Convert.ToInt64(value) == version;
 		}
 
@@ -1517,6 +1516,7 @@ namespace Migrator.Providers
 			IDbCommand cmd = _connection.CreateCommand();
 			cmd.CommandText = sql;
 			cmd.CommandType = CommandType.Text;
+			cmd.CommandTimeout = CommandTimeout;
 			if (_transaction != null)
 			{
 				cmd.Transaction = _transaction;
@@ -1673,14 +1673,14 @@ namespace Migrator.Providers
 			}
 		}
 
-		string FormatValue(object value)
+		private string FormatValue(object value)
 		{
 			if (value == null) return null;
 			if (value is DateTime) return ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss:fff");
 			return value.ToString();
 		}
 
-		void QuoteColumnNames(string[] primaryColumns)
+		private void QuoteColumnNames(string[] primaryColumns)
 		{
 			for (int i = 0; i < primaryColumns.Length; i++)
 			{

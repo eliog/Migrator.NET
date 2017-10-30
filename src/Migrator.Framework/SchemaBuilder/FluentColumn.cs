@@ -9,7 +9,7 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 using System.Data;
 
@@ -17,7 +17,7 @@ namespace Migrator.Framework.SchemaBuilder
 {
 	public class FluentColumn : IFluentColumn
 	{
-		readonly Column _inner;
+		private readonly Column _inner;
 
 		public FluentColumn(string columnName)
 		{

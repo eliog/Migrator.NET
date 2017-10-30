@@ -9,17 +9,17 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Migrator.Compile;
 using Migrator.Framework.Loggers;
 using Migrator.MSBuild.Logger;
 using Migrator.Providers;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Migrator.MSBuild
 {
@@ -27,7 +27,7 @@ namespace Migrator.MSBuild
 	/// Runs migrations on a database
 	/// </summary>
 	/// <remarks>
-	/// To script the changes applied to the database via the migrations into a file, set the <see cref="ScriptChanges"/> 
+	/// To script the changes applied to the database via the migrations into a file, set the <see cref="ScriptChanges"/>
 	/// flag and provide a file to write the changes to via the <see cref="ScriptFile"/> setting.
 	/// </remarks>
 	/// <example>
@@ -50,11 +50,11 @@ namespace Migrator.MSBuild
 	/// </example>
 	public class Migrate : Task
 	{
-		string _scriptFile;
-		long _to = -1; // To last revision
+		private string _scriptFile;
+		private long _to = -1; // To last revision
 
 		[Required]
-        public ProviderTypes Provider { set; get; }
+		public ProviderTypes Provider { set; get; }
 
 		public string DefaultSchema { get; set; }
 
@@ -62,13 +62,13 @@ namespace Migrator.MSBuild
 		public string ConnectionString { set; get; }
 
 		/// <summary>
-		/// The paths to the assemblies that contain your migrations. 
+		/// The paths to the assemblies that contain your migrations.
 		/// This will generally just be a single item.
 		/// </summary>
 		public ITaskItem[] Migrations { set; get; }
 
 		/// <summary>
-		/// The paths to the directory that contains your migrations. 
+		/// The paths to the directory that contains your migrations.
 		/// This will generally just be a single item.
 		/// </summary>
 		public string Directory { set; get; }
@@ -86,7 +86,7 @@ namespace Migrator.MSBuild
 		public bool DryRun { set; get; }
 
 		/// <summary>
-		/// Gets value indicating whether to script the changes made to the database 
+		/// Gets value indicating whether to script the changes made to the database
 		/// to the file indicated by <see cref="ScriptFile"/>.
 		/// </summary>
 		/// <value><c>true</c> if the changes should be scripted to a file; otherwise, <c>false</c>.</value>
@@ -96,7 +96,7 @@ namespace Migrator.MSBuild
 		}
 
 		/// <summary>
-		/// Gets or sets the script file that will contain the Sql statements 
+		/// Gets or sets the script file that will contain the Sql statements
 		/// that are executed as part of the migrations.
 		/// </summary>
 		public string ScriptFile
@@ -107,7 +107,7 @@ namespace Migrator.MSBuild
 
 		public override bool Execute()
 		{
-			if (! String.IsNullOrEmpty(Directory))
+			if (!String.IsNullOrEmpty(Directory))
 			{
 				var engine = new ScriptEngine(Language, null);
 				Execute(engine.Compile(Directory));
@@ -125,7 +125,7 @@ namespace Migrator.MSBuild
 			return true;
 		}
 
-		void Execute(Assembly asm)
+		private void Execute(Assembly asm)
 		{
 			var mig = new Migrator(Provider, ConnectionString, DefaultSchema, asm, Trace, new TaskLogger(this));
 			mig.DryRun = DryRun;
@@ -143,7 +143,7 @@ namespace Migrator.MSBuild
 			}
 		}
 
-		void RunMigration(Migrator mig)
+		private void RunMigration(Migrator mig)
 		{
 			if (mig.DryRun)
 				mig.Logger.Log("********** Dry run! Not actually applying changes. **********");

@@ -1,9 +1,8 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-
-using Migrator.Framework;
 
 namespace Migrator.Providers
 {
@@ -35,7 +34,7 @@ namespace Migrator.Providers
 	/// would result in
 	/// <code>
 	///		Names.Get(DbType)			// --> "VARCHAR($l)" (will cause trouble)
-	///		Names.Get(DbType,100)		// --> "VARCHAR(100)" 
+	///		Names.Get(DbType,100)		// --> "VARCHAR(100)"
 	///		Names.Get(DbType,1000)	// --> "VARCHAR(1000)"
 	///		Names.Get(DbType,10000)	// --> "VARCHAR(10000)"
 	/// </code>
@@ -46,9 +45,9 @@ namespace Migrator.Providers
 		public const string PrecisionPlaceHolder = "$p";
 		public const string ScalePlaceHolder = "$s";
 
-		readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
+		private readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
 
-		readonly Dictionary<DbType, SortedList<int, string>> weighted =
+		private readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
 
 		public DbType GetDbType(string type)
@@ -104,7 +103,7 @@ namespace Migrator.Providers
 			return Get(typecode);
 		}
 
-		static string Replace(string type, int size, int precision, int scale)
+		private static string Replace(string type, int size, int precision, int scale)
 		{
 			type = StringUtils.ReplaceOnce(type, LengthPlaceHolder, size.ToString());
 			type = StringUtils.ReplaceOnce(type, ScalePlaceHolder, scale.ToString());
@@ -129,7 +128,7 @@ namespace Migrator.Providers
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="typecode"></param>
 		/// <param name="value"></param>

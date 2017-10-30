@@ -9,13 +9,13 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 namespace Migrator.Framework.SchemaBuilder
 {
 	public class AddTableExpression : ISchemaBuilderExpression
 	{
-		readonly string _newTable;
+		private readonly string _newTable;
 
 		public AddTableExpression(string newTable)
 		{

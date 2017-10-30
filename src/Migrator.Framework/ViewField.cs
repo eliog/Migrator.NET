@@ -9,35 +9,33 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
-
-using System.Data;
+#endregion License
 
 namespace Migrator.Framework
 {
 	/// <summary>
 	/// Represents a table column.
 	/// </summary>
-    public class ViewField : IViewField
+	public class ViewField : IViewField
 	{
-        public ViewField(string ColumnName)
+		public ViewField(string ColumnName)
 		{
-            this.ColumnName = ColumnName;
+			this.ColumnName = ColumnName;
 		}
 
-        public ViewField(string ColumnName, string TableName, string KeyColumnName, string ParentTableName, string ParentKeyColumnName)
-        {
-            this.ColumnName = ColumnName;
-            this.TableName = TableName;
-            this.KeyColumnName = KeyColumnName;
-            this.ParentTableName = ParentTableName;
-            this.ParentKeyColumnName = ParentKeyColumnName;
-        }
-		
-	    public string TableName { get; set; }
-	    public string ColumnName { get; set; }
-	    public string KeyColumnName { get; set; }
-	    public string ParentTableName { get; set; }
-	    public string ParentKeyColumnName { get; set; }
+		public ViewField(string ColumnName, string TableName, string KeyColumnName, string ParentTableName, string ParentKeyColumnName)
+		{
+			this.ColumnName = ColumnName;
+			this.TableName = TableName;
+			this.KeyColumnName = KeyColumnName;
+			this.ParentTableName = ParentTableName;
+			this.ParentKeyColumnName = ParentKeyColumnName;
+		}
+
+		public string TableName { get; set; }
+		public string ColumnName { get; set; }
+		public string KeyColumnName { get; set; }
+		public string ParentTableName { get; set; }
+		public string ParentKeyColumnName { get; set; }
 	}
 }

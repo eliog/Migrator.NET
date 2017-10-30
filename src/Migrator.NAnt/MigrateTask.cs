@@ -9,18 +9,17 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.IO;
-using System.Reflection;
 using Migrator.Compile;
 using Migrator.Framework.Loggers;
 using Migrator.NAnt.Loggers;
 using Migrator.Providers;
-
 using NAnt.Core;
 using NAnt.Core.Attributes;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Migrator.NAnt
 {
@@ -41,14 +40,14 @@ namespace Migrator.NAnt
 	[TaskName("migrate")]
 	public class MigrateTask : Task
 	{
-		string _scriptFile;
-		long _to = -1; // To last revision
+		private string _scriptFile;
+		private long _to = -1; // To last revision
 
 		[TaskAttribute("defaultschema")]
 		public string DefaultSchema { get; set; }
 
 		[TaskAttribute("provider", Required = true)]
-        public ProviderTypes Provider { set; get; }
+		public ProviderTypes Provider { set; get; }
 
 		[TaskAttribute("connectionstring", Required = true)]
 		public string ConnectionString { set; get; }
@@ -57,7 +56,7 @@ namespace Migrator.NAnt
 		public FileInfo MigrationsAssembly { set; get; }
 
 		/// <summary>
-		/// The paths to the directory that contains your migrations. 
+		/// The paths to the directory that contains your migrations.
 		/// This will generally just be a single item.
 		/// </summary>
 		[TaskAttribute("directory")]
@@ -80,7 +79,7 @@ namespace Migrator.NAnt
 		public bool DryRun { set; get; }
 
 		/// <summary>
-		/// Gets value indicating whether to script the changes made to the database 
+		/// Gets value indicating whether to script the changes made to the database
 		/// to the file indicated by <see cref="ScriptFile"/>.
 		/// </summary>
 		/// <value><c>true</c> if the changes should be scripted to a file; otherwise, <c>false</c>.</value>
@@ -90,7 +89,7 @@ namespace Migrator.NAnt
 		}
 
 		/// <summary>
-		/// Gets or sets the script file that will contain the Sql statements 
+		/// Gets or sets the script file that will contain the Sql statements
 		/// that are executed as part of the migrations.
 		/// </summary>
 		[TaskAttribute("scriptFile")]
@@ -102,7 +101,7 @@ namespace Migrator.NAnt
 
 		protected override void ExecuteTask()
 		{
-			if (! String.IsNullOrEmpty(Directory))
+			if (!String.IsNullOrEmpty(Directory))
 			{
 				var engine = new ScriptEngine(Language, null);
 				Execute(engine.Compile(Directory));
@@ -115,7 +114,7 @@ namespace Migrator.NAnt
 			}
 		}
 
-		void Execute(Assembly asm)
+		private void Execute(Assembly asm)
 		{
 			var mig = new Migrator(Provider, ConnectionString, DefaultSchema, asm, Trace, new TaskLogger(this));
 			mig.DryRun = DryRun;
@@ -133,7 +132,7 @@ namespace Migrator.NAnt
 			}
 		}
 
-		void RunMigration(Migrator mig)
+		private void RunMigration(Migrator mig)
 		{
 			if (mig.DryRun)
 				mig.Logger.Log("********** Dry run! Not actually applying changes. **********");
