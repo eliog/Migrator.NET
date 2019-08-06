@@ -15,7 +15,7 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.AnsiStringFixedLength, int.MaxValue, "CHAR(max)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
-			RegisterColumnType(DbType.AnsiString, 2147483647, "TEXT");
+			RegisterColumnType(DbType.AnsiString, int.MaxValue, "TEXT");
 			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
 			RegisterColumnType(DbType.Binary, int.MaxValue - 1, "VARBINARY($l)");
 			RegisterColumnType(DbType.Binary, int.MaxValue, "VARBINARY(max)");
@@ -24,6 +24,7 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
+			RegisterColumnTypeAlias(DbType.DateTime, "SMALLDATETIME");
 			RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOffset(7)");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");

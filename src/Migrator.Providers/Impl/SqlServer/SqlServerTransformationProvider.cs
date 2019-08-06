@@ -55,13 +55,15 @@ namespace Migrator.Providers.SqlServer
 		public override bool ConstraintExists(string table, string name)
 		{
 			bool retVal = false;
-			using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
 			{
 				retVal = reader.Read();
 			}
 
 			if (!retVal)
-				using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND Name = '{1}'", table, name)))
+				using (var cmd = CreateCommand())
+				using (IDataReader reader = ExecuteQuery(cmd, string.Format("SELECT TOP 1 * FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND Name = '{1}'", table, name)))
 				{
 					return reader.Read();
 				}
@@ -144,8 +146,9 @@ namespace Migrator.Providers.SqlServer
 			{
 				schema = _defaultSchema;
 			}
+			using (var cmd = CreateCommand())
 			using (
-				IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
+				IDataReader reader = base.ExecuteQuery(cmd, string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
 			{
 				return reader.Read();
 			}
@@ -174,7 +177,8 @@ namespace Migrator.Providers.SqlServer
 				schema = _defaultSchema;
 			}
 
-			using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = base.ExecuteQuery(cmd, string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))
 			{
 				return reader.Read();
 			}
@@ -218,7 +222,8 @@ FROM    sys.[indexes] Ind
         INNER JOIN sys.[tables] AS Tab ON Tab.[object_id] = Ind.[object_id]
         WHERE LOWER(Tab.[name]) = LOWER('{0}')";
 
-			using (var reader = ExecuteQuery(string.Format(sql, table)))
+			using (var cmd = CreateCommand())
+			using (var reader = ExecuteQuery(cmd, string.Format(sql, table)))
 			{
 				while (reader.Read())
 				{
@@ -243,6 +248,19 @@ FROM    sys.[indexes] Ind
 
 		public override Column[] GetColumns(string table)
 		{
+			string schema;
+
+			int firstIndex = table.IndexOf(".");
+			if (firstIndex >= 0)
+			{
+				schema = table.Substring(0, firstIndex);
+				table = table.Substring(firstIndex + 1);
+			}
+			else
+			{
+				schema = _defaultSchema;
+			}
+
 			var pkColumns = new List<string>();
 			try
 			{
@@ -251,11 +269,20 @@ FROM    sys.[indexes] Ind
 			catch (Exception)
 			{ }
 
+			var idtColumns = new List<string>();
+			try
+			{
+				idtColumns = this.ExecuteStringQuery(" select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_SCHEMA = '{1}' and TABLE_NAME = '{0}' and COLUMNPROPERTY(object_id(TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1", table, schema);
+			}
+			catch (Exception)
+			{ }
+
 			var columns = new List<Column>();
+			using (var cmd = CreateCommand())
 			using (
 					IDataReader reader =
-					ExecuteQuery(
-						String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, ISNULL(CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION), COLUMN_DEFAULT from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
+					ExecuteQuery(cmd,
+						String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, ISNULL(CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION), COLUMN_DEFAULT, NUMERIC_SCALE from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
 			{
 				while (reader.Read())
 				{
@@ -263,6 +290,9 @@ FROM    sys.[indexes] Ind
 
 					if (pkColumns.Contains(column.Name))
 						column.ColumnProperty |= ColumnProperty.PrimaryKey;
+
+					if (idtColumns.Contains(column.Name))
+						column.ColumnProperty |= ColumnProperty.Identity;
 
 					string nullableStr = reader.GetString(1);
 					bool isNullable = nullableStr == "YES";
@@ -292,6 +322,13 @@ FROM    sys.[indexes] Ind
 
 						if (column.Type == DbType.Double || column.Type == DbType.Single)
 							column.DefaultValue = double.Parse(column.DefaultValue.ToString());
+					}
+					if (!reader.IsDBNull(5))
+					{
+						if (column.Type == DbType.Decimal)
+						{
+							column.Size = reader.GetInt32(5);
+						}
 					}
 
 					column.ColumnProperty |= isNullable ? ColumnProperty.Null : ColumnProperty.NotNull;
@@ -351,7 +388,8 @@ FROM    sys.[indexes] Ind
 		{
 			string sqlContrainte = FindConstraints(table, column);
 			var constraints = new List<string>();
-			using (IDataReader reader = ExecuteQuery(sqlContrainte))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, sqlContrainte))
 			{
 				while (reader.Read())
 				{
@@ -369,7 +407,8 @@ FROM    sys.[indexes] Ind
 		{
 			string sqlIndex = this.FindIndexes(table, column);
 			var indexes = new List<string>();
-			using (IDataReader reader = ExecuteQuery(sqlIndex))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, sqlIndex))
 			{
 				while (reader.Read())
 				{
@@ -386,9 +425,15 @@ FROM    sys.[indexes] Ind
 		protected virtual string FindIndexes(string table, string column)
 		{
 			return string.Format(@"
+<<<<<<< HEAD
 select
     i.name as IndexName
 from sys.indexes i
+=======
+select
+    i.name as IndexName
+from sys.indexes i
+>>>>>>> upstream/master
 join sys.objects o on i.object_id = o.object_id
 join sys.index_columns ic on ic.object_id = i.object_id
     and ic.index_id = i.index_id
@@ -411,18 +456,13 @@ WHERE TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
 AND CU.TABLE_NAME = '{0}'
 AND CU.COLUMN_NAME = '{1}'",
 					table, column);
-
-			/*return string.Format(
-                "SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
-                + "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
-                + "AND col.name = '{1}' AND col.id = object_id('{0}')",
-                table, column);*/
 		}
 
 		public override bool IndexExists(string table, string name)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT top 1 * FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
+				ExecuteQuery(cmd, string.Format("SELECT top 1 * FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
 			{
 				return reader.Read();
 			}
@@ -438,8 +478,9 @@ AND CU.COLUMN_NAME = '{1}'",
 
 		protected override string GetPrimaryKeyConstraintName(string table)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND is_primary_key = 1", table)))
+				ExecuteQuery(cmd, string.Format("SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND is_primary_key = 1", table)))
 			{
 				return reader.Read() ? reader.GetString(0) : null;
 			}

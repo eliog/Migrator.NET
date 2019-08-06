@@ -170,10 +170,11 @@ namespace Migrator.Tests.Providers
 		}
 
 		[Test]
+		[Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedException(typeof(MigrationException))]
 		public void RenameTableToExistingTable()
 		{
 			AddTable();
-			Assert.Throws<MigrationException>(() => _provider.RenameTable("Test", "TestTwo"));
+			_provider.RenameTable("Test", "TestTwo");
 		}
 
 		[Test]
@@ -187,10 +188,11 @@ namespace Migrator.Tests.Providers
 		}
 
 		[Test]
+		[Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedException(typeof(MigrationException))]
 		public void RenameColumnToExistingColumn()
 		{
 			AddTable();
-			Assert.Throws<MigrationException>(() => _provider.RenameColumn("Test", "Title", "name"));
+			_provider.RenameColumn("Test", "Title", "name");
 		}
 
 		[Test]
@@ -295,6 +297,7 @@ namespace Migrator.Tests.Providers
 		/// Supprimer une colonne bit causait une erreur à cause
 		/// de la valeur par défaut.
 		/// </summary>
+
 		[Test]
 		public void RemoveBoolColumn()
 		{
@@ -344,6 +347,7 @@ namespace Migrator.Tests.Providers
 		/// Reproduce bug reported by Luke Melia & Daniel Berlinger :
 		/// http://macournoyer.wordpress.com/2006/10/15/migrate-nant-task/#comment-113
 		/// </summary>
+
 		[Test]
 		public void CommitTwice()
 		{
@@ -357,7 +361,8 @@ namespace Migrator.Tests.Providers
 		{
 			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 1, "1" });
 			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 2, "2" });
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
 
@@ -372,7 +377,8 @@ namespace Migrator.Tests.Providers
 			AddTable();
 			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "1", "foo" });
 			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "2", null });
-			using (IDataReader reader = _provider.Select("Title", "Test"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "Title", "Test"))
 			{
 				string[] vals = GetStringVals(reader);
 
@@ -386,7 +392,8 @@ namespace Migrator.Tests.Providers
 		{
 			AddTable();
 			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "1", "Muad'Dib" });
-			using (IDataReader reader = _provider.Select("Title", "Test"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "Title", "Test"))
 			{
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual("Muad'Dib", reader.GetString(0));
@@ -399,8 +406,8 @@ namespace Migrator.Tests.Providers
 		{
 			InsertData();
 			_provider.Delete("TestTwo", "TestId", "1");
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual(2, Convert.ToInt32(reader[0]));
@@ -413,8 +420,8 @@ namespace Migrator.Tests.Providers
 		{
 			InsertData();
 			_provider.Delete("TestTwo", new[] { "TestId" }, new[] { "1" });
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual(2, Convert.ToInt32(reader[0]));
@@ -429,8 +436,8 @@ namespace Migrator.Tests.Providers
 			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 21, "2" });
 
 			_provider.Update("TestTwo", new[] { "TestId" }, new[] { "3" });
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
 
@@ -448,8 +455,8 @@ namespace Migrator.Tests.Providers
 			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "2", null });
 
 			_provider.Update("Test", new[] { "Title" }, new string[] { null });
-
-			using (IDataReader reader = _provider.Select("Title", "Test"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "Title", "Test"))
 			{
 				string[] vals = GetStringVals(reader);
 
@@ -465,8 +472,8 @@ namespace Migrator.Tests.Providers
 			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 11, "2" });
 
 			_provider.Update("TestTwo", new[] { "TestId" }, new[] { "3" }, "TestId='1'");
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
 

@@ -16,6 +16,8 @@ namespace Migrator.Framework
 
 		string SchemaInfoTable { get; set; }
 
+		int? CommandTimeout { get; set; }
+
 		IDialect Dialect { get; }
 
 		/// <summary>
@@ -29,8 +31,6 @@ namespace Migrator.Framework
 		/// Connection string to the database
 		/// </summary>
 		String ConnectionString { get; }
-
-		int CommandTimeout { get; set; }
 
 		/// <summary>
 		/// Logger used to log details of operations performed during migration
@@ -233,6 +233,8 @@ namespace Migrator.Framework
 		/// <param name="checkSql">The check constraint definition.</param>
 		void AddCheckConstraint(string name, string table, string checkSql);
 
+		void AddView(string name, string tableName, params IViewElement[] viewElements);
+
 		void AddView(string name, string tableName, params IViewField[] fields);
 
 		/// <summary>
@@ -316,7 +318,13 @@ namespace Migrator.Framework
 		/// </summary>
 		/// <param name="sql">The SQL to execute.</param>
 		/// <returns></returns>
-		IDataReader ExecuteQuery(string sql);
+		IDataReader ExecuteQuery(IDbCommand cmd, string sql);
+
+		/// <summary>
+		/// Creates a DbCommand
+		/// </summary>
+		/// <returns></returns>
+		IDbCommand CreateCommand();
 
 		/// <summary>
 		/// Execute an arbitrary SQL query
@@ -469,7 +477,7 @@ namespace Migrator.Framework
 		/// <param name="from">The table to select from</param>
 		/// <param name="where">The where clause to limit the selection</param>
 		/// <returns></returns>
-		IDataReader Select(string what, string from, string where);
+		IDataReader Select(IDbCommand cmd, string what, string from, string where);
 
 		/// <summary>
 		/// Get values from a table
@@ -479,7 +487,20 @@ namespace Migrator.Framework
 		/// <param name="whereColumns"></param>
 		/// <param name="whereValues"></param>
 		/// <returns></returns>
-		IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
+		IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
+
+		/// <summary>
+		/// Get values from a table
+		/// </summary>
+		/// <param name="table"></param>
+		/// <param name="columns"></param>
+		/// <param name="whereColumns"></param>
+		/// <param name="whereValues"></param>
+		/// <param name="nullWhereColumns"></param>
+		/// <param name="notNullWhereColumns"></param>
+		/// <returns></returns>
+		IDataReader SelectComplex(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
+			object[] whereValues = null, string[] nullWhereColumns = null, string[] notNullWhereColumns = null);
 
 		/// <summary>
 		/// Get values from a table
@@ -487,7 +508,7 @@ namespace Migrator.Framework
 		/// <param name="what">The columns to select</param>
 		/// <param name="from">The table to select from</param>
 		/// <returns></returns>
-		IDataReader Select(string what, string from);
+		IDataReader Select(IDbCommand cmd, string what, string from);
 
 		/// <summary>
 		/// Get a single value from a table

@@ -18,6 +18,8 @@ namespace Migrator.Providers
 		{
 		}
 
+		public int? CommandTimeout { get; set; }
+
 		public IDialect Dialect
 		{
 			get { return null; }
@@ -32,8 +34,6 @@ namespace Migrator.Providers
 		{
 			get { return String.Empty; }
 		}
-
-		public int CommandTimeout { get; set; }
 
 		public virtual ILogger Logger
 		{
@@ -101,9 +101,14 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void AddView(string name, string tableName, params IViewField[] fields)
+		public void AddView(string name, string tableName, params IViewElement[] viewElements)
 		{
 			// No Op
+		}
+
+		public void AddView(string name, string tableName, params IViewField[] fields)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void AddTable(string name, params IDbField[] columns)
@@ -267,9 +272,14 @@ namespace Migrator.Providers
 			return 0;
 		}
 
-		public IDataReader ExecuteQuery(string sql)
+		public IDataReader ExecuteQuery(IDbCommand cmd, string sql)
 		{
 			return null;
+		}
+
+		public IDbCommand CreateCommand()
+		{
+			throw new NotImplementedException();
 		}
 
 		public object ExecuteScalar(string sql)
@@ -277,17 +287,23 @@ namespace Migrator.Providers
 			return null;
 		}
 
-		public IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
+		public IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns, object[] whereValues)
 		{
 			return null;
 		}
 
-		public IDataReader Select(string what, string from)
+		public IDataReader SelectComplex(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
+			object[] whereValues = null, string[] nullWhereColumns = null, string[] notNullWhereColumns = null)
 		{
 			return null;
 		}
 
-		public IDataReader Select(string what, string from, string where)
+		public IDataReader Select(IDbCommand cmd, string what, string from)
+		{
+			return null;
+		}
+
+		public IDataReader Select(IDbCommand cmd, string what, string from, string where)
 		{
 			return null;
 		}

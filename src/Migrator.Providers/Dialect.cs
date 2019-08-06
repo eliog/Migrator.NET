@@ -94,7 +94,7 @@ namespace Migrator.Providers
 
 			if (isReserved)
 			{
-				Console.WriteLine("Reserved word: {0}", reservedWord);
+				//Console.WriteLine("Reserved word: {0}", reservedWord);
 			}
 
 			return isReserved;
@@ -135,6 +135,11 @@ namespace Migrator.Providers
 		protected void RegisterColumnType(DbType code, string name)
 		{
 			typeNames.Put(code, name);
+		}
+
+		protected void RegisterColumnTypeAlias(DbType code, string alias)
+		{
+			typeNames.PutAlias(code, alias);
 		}
 
 		public virtual ColumnPropertiesMapper GetColumnMapper(Column column)

@@ -25,8 +25,6 @@ namespace Migrator.Providers.Impl.Firebird
 
 			AddIdentity(column, vals);
 
-			//AddUnsigned(column, vals);
-
 			AddPrimaryKey(column, vals);
 
 			AddIdentityAgain(column, vals);

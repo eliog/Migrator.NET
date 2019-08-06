@@ -1,4 +1,4 @@
-﻿namespace Migrator.Framework
+namespace Migrator.Framework
 {
 	public interface IViewField
 	{

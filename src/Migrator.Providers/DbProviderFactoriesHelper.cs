@@ -19,7 +19,7 @@ namespace Migrator.Providers
 #if NETSTANDARD
 			return null;
 #else
-            return (DbProviderFactory)AppDomain.CurrentDomain.CreateInstanceAndUnwrap(assemblyName, factoryProviderType);
+			return (DbProviderFactory)AppDomain.CurrentDomain.CreateInstanceAndUnwrap(assemblyName, factoryProviderType);
 #endif
 		}
 	}
@@ -49,6 +49,5 @@ namespace Migrator.Providers
 			return _configs.Keys.ToArray();
 		}
 	}
-
 #endif
 }
