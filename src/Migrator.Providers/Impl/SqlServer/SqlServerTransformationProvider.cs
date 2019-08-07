@@ -425,15 +425,9 @@ FROM    sys.[indexes] Ind
 		protected virtual string FindIndexes(string table, string column)
 		{
 			return string.Format(@"
-<<<<<<< HEAD
 select
     i.name as IndexName
 from sys.indexes i
-=======
-select
-    i.name as IndexName
-from sys.indexes i
->>>>>>> upstream/master
 join sys.objects o on i.object_id = o.object_id
 join sys.index_columns ic on ic.object_id = i.object_id
     and ic.index_id = i.index_id
