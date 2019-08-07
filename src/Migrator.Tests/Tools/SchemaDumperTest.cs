@@ -19,25 +19,6 @@ using System.Configuration;
 
 namespace Migrator.Tests.Tools
 {
-	[TestFixture]
-	[Category("MySql")]
-	public class SchemaDumperTest
-	{
-		[Test]
-		public void Dump()
-		{
-			string constr = ConfigurationManager.AppSettings["MySqlConnectionString"];
-
-			if (constr == null)
-				throw new ArgumentNullException("MySqlConnectionString", "No config file");
-
-			var dumper = new SchemaDumper(ProviderTypes.Mysql, constr, null);
-			string output = dumper.Dump();
-
-			Assert.IsNotNull(output);
-		}
-	}
-
 	[TestFixture, Category("SqlServer2005")]
 	public class SchemaDumperSqlServerTest
 	{

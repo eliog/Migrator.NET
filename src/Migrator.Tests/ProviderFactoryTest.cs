@@ -21,42 +21,12 @@ namespace Migrator.Tests
 		}
 
 		[Test]
-		[Category("MySql")]
-		public void CanLoad_MySqlProvider()
-		{
-			ITransformationProvider provider = ProviderFactory.Create(ProviderTypes.Mysql,
-																	  ConfigurationManager.AppSettings[
-																		  "MySqlConnectionString"], null);
-			Assert.IsNotNull(provider);
-		}
-
-		[Test]
-		[Category("Postgre")]
-		public void CanLoad_PostgreSQLProvider()
-		{
-			ITransformationProvider provider = ProviderFactory.Create(ProviderTypes.PostgreSQL,
-																	  ConfigurationManager.AppSettings[
-																																	"NpgsqlConnectionString"], null);
-			Assert.IsNotNull(provider);
-		}
-
-		[Test]
 		[Category("SqlServer2005")]
 		public void CanLoad_SqlServer2005Provider()
 		{
 			ITransformationProvider provider = ProviderFactory.Create(ProviderTypes.SqlServer2005,
 																	  ConfigurationManager.AppSettings[
 																																	"SqlServer2005ConnectionString"], null);
-			Assert.IsNotNull(provider);
-		}
-
-		[Test]
-		[Category("SqlServerCe")]
-		public void CanLoad_SqlServerCeProvider()
-		{
-			ITransformationProvider provider = ProviderFactory.Create(ProviderTypes.SqlServerCe,
-																	  ConfigurationManager.AppSettings[
-																																	"SqlServerCeConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 

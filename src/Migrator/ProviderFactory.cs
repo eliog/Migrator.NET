@@ -13,13 +13,6 @@
 
 using Migrator.Framework;
 using Migrator.Providers;
-using Migrator.Providers.Impl.DB2;
-using Migrator.Providers.Impl.Firebird;
-using Migrator.Providers.Impl.Informix;
-using Migrator.Providers.Impl.Ingres;
-using Migrator.Providers.Impl.Sybase;
-using Migrator.Providers.Mysql;
-using Migrator.Providers.PostgreSQL;
 using Migrator.Providers.SqlServer;
 using System;
 using System.Data;
@@ -61,28 +54,10 @@ namespace Migrator
 		{
 			switch (providerType)
 			{
-				case ProviderTypes.Mysql:
-					return (Dialect)Activator.CreateInstance(typeof(MysqlDialect));
-				case ProviderTypes.MariaDB:
-					return (Dialect)Activator.CreateInstance(typeof(MariaDBDialect));
-				case ProviderTypes.PostgreSQL:
-					return (Dialect)Activator.CreateInstance(typeof(PostgreSQLDialect));
-				case ProviderTypes.PostgreSQL82:
-					return (Dialect)Activator.CreateInstance(typeof(PostgreSQL82Dialect));
 				case ProviderTypes.SqlServer:
 					return (Dialect)Activator.CreateInstance(typeof(SqlServerDialect));
 				case ProviderTypes.SqlServer2005:
 					return (Dialect)Activator.CreateInstance(typeof(SqlServer2005Dialect));
-				case ProviderTypes.IBM_DB2:
-					return (Dialect)Activator.CreateInstance(typeof(DB2Dialect));
-				case ProviderTypes.IBM_Informix:
-					return (Dialect)Activator.CreateInstance(typeof(InformixDialect));
-				case ProviderTypes.Firebird:
-					return (Dialect)Activator.CreateInstance(typeof(FirebirdDialect));
-				case ProviderTypes.Ingres:
-					return (Dialect)Activator.CreateInstance(typeof(IngresDialect));
-				case ProviderTypes.Sybase:
-					return (Dialect)Activator.CreateInstance(typeof(SybaseDialect));
 			}
 
 			return null;

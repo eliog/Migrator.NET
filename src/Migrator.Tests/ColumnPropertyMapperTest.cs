@@ -1,6 +1,5 @@
 using Migrator.Framework;
 using Migrator.Providers;
-using Migrator.Providers.PostgreSQL;
 using Migrator.Providers.SqlServer;
 using NUnit.Framework;
 using System.Data;
@@ -10,22 +9,6 @@ namespace Migrator.Tests
 	[TestFixture]
 	public class ColumnPropertyMapperTest
 	{
-		[Test]
-		public void PostgresIndexSqlIsNoNullWhenIndexed()
-		{
-			var mapper = new ColumnPropertiesMapper(new PostgreSQLDialect(), "char(1)");
-			mapper.MapColumnProperties(new Column("foo", DbType.StringFixedLength, 1, ColumnProperty.Indexed));
-			Assert.IsNotNull(mapper.IndexSql);
-		}
-
-		[Test]
-		public void PostgresIndexSqlIsNullWhenIndexedFalse()
-		{
-			var mapper = new ColumnPropertiesMapper(new PostgreSQLDialect(), "char(1)");
-			mapper.MapColumnProperties(new Column("foo", DbType.StringFixedLength, 1, 0));
-			Assert.IsNull(mapper.IndexSql);
-		}
-
 		[Test]
 		public void SqlServerCreatesNotNullSql()
 		{
