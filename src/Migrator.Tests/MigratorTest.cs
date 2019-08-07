@@ -13,8 +13,8 @@
 
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
+using NSubstitute;
 using NUnit.Framework;
-using NUnit.Mocks;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -52,21 +52,21 @@ namespace Migrator.Tests
 
 		private void SetUpCurrentVersion(long version, bool assertRollbackIsCalled, bool includeBad)
 		{
-			var providerMock = new DynamicMock(typeof(ITransformationProvider));
+			var providerMock = Substitute.For<ITransformationProvider>();
 
 			var appliedVersions = new List<long>();
 			for (long i = 1; i <= version; i++)
 			{
 				appliedVersions.Add(i);
 			}
-			providerMock.SetReturnValue("get_AppliedMigrations", appliedVersions);
-			providerMock.SetReturnValue("get_Logger", new Logger(false));
+			providerMock.AppliedMigrations.Returns(appliedVersions);
+			providerMock.Logger.Returns(new Logger(false));
 			if (assertRollbackIsCalled)
-				providerMock.Expect("Rollback");
+				providerMock.Received().Rollback();
 			else
-				providerMock.ExpectNoCall("Rollback");
+				providerMock.DidNotReceive().Rollback();
 
-			_migrator = new Migrator((ITransformationProvider)providerMock.MockInstance, Assembly.GetExecutingAssembly(), false);
+			_migrator = new Migrator((ITransformationProvider)providerMock, Assembly.GetExecutingAssembly(), false);
 
 			// Enlève toutes les migrations trouvée automatiquement
 			_migrator.MigrationsTypes.Clear();

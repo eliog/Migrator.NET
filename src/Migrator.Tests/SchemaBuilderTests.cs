@@ -1,8 +1,7 @@
-using System.Data;
 using Migrator.Framework;
 using Migrator.Framework.SchemaBuilder;
 using NUnit.Framework;
-using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
+using System.Data;
 
 namespace Migrator.Tests
 {
@@ -84,10 +83,9 @@ namespace Migrator.Tests
 		{
 			_schemaBuilder
 				.AddColumn("MyColumnThatIsForeignKey")
-				.AsForeignKey().ReferencedTo("PrimaryKeyTable", "PrimaryKeyColumn").WithConstraint(ForeignKeyConstraint.NoAction);
+				.AsForeignKey().ReferencedTo("PrimaryKeyTable", "PrimaryKeyColumn").WithConstraint(ForeignKeyConstraintType.NoAction);
 
 			//Assert.IsTrue(_schemaBuilder.Columns[0].ColumnProperty == ColumnProperty.ForeignKey);
 		}
 	}
 }
-

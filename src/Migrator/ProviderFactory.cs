@@ -73,8 +73,6 @@ namespace Migrator
 					return (Dialect)Activator.CreateInstance(typeof(SqlServerDialect));
 				case ProviderTypes.SqlServer2005:
 					return (Dialect)Activator.CreateInstance(typeof(SqlServer2005Dialect));
-				case ProviderTypes.SqlServerCe:
-					return (Dialect)Activator.CreateInstance(typeof(SqlServerCeDialect));
 				case ProviderTypes.IBM_DB2:
 					return (Dialect)Activator.CreateInstance(typeof(DB2Dialect));
 				case ProviderTypes.IBM_Informix:

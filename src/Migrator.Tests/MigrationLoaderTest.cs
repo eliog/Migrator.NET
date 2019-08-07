@@ -1,7 +1,7 @@
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
+using NSubstitute;
 using NUnit.Framework;
-using NUnit.Mocks;
 using System.Reflection;
 
 namespace Migrator.Tests
@@ -23,16 +23,15 @@ namespace Migrator.Tests
 
 		private void SetUpCurrentVersion(int version, bool assertRollbackIsCalled)
 		{
-			var providerMock = new DynamicMock(typeof(ITransformationProvider));
+			var providerMock = Substitute.For<ITransformationProvider>();
 
-			providerMock.SetReturnValue("get_CurrentVersion", version);
-			providerMock.SetReturnValue("get_Logger", new Logger(false));
+			providerMock.Logger.Returns(new Logger(false));
 			if (assertRollbackIsCalled)
-				providerMock.Expect("Rollback");
+				providerMock.Received().Rollback();
 			else
-				providerMock.ExpectNoCall("Rollback");
+				providerMock.DidNotReceive().Rollback();
 
-			_migrationLoader = new MigrationLoader((ITransformationProvider)providerMock.MockInstance, Assembly.GetExecutingAssembly(), true);
+			_migrationLoader = new MigrationLoader((ITransformationProvider)providerMock, Assembly.GetExecutingAssembly(), true);
 			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.FirstMigration));
 			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.SecondMigration));
 			_migrationLoader.MigrationsTypes.Add(typeof(MigratorTest.ThirdMigration));
