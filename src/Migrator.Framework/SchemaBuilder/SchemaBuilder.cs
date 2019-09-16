@@ -9,7 +9,7 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 using System;
 using System.Collections.Generic;
@@ -19,9 +19,9 @@ namespace Migrator.Framework.SchemaBuilder
 {
 	public class SchemaBuilder : IColumnOptions, IForeignKeyOptions, IDeleteTableOptions
 	{
-		readonly IList<ISchemaBuilderExpression> _exprs;
-		IFluentColumn _currentColumn;
-		string _currentTable;
+		private readonly IList<ISchemaBuilderExpression> _exprs;
+		private IFluentColumn _currentColumn;
+		private string _currentTable;
 
 		public SchemaBuilder()
 		{
@@ -102,7 +102,7 @@ namespace Migrator.Framework.SchemaBuilder
 
 		public SchemaBuilder ReferencedTo(string primaryKeyTable, string primaryKeyColumn)
 		{
-			_currentColumn.Constraint = ForeignKeyConstraint.NoAction;
+			_currentColumn.Constraint = ForeignKeyConstraintType.NoAction;
 			_currentColumn.ForeignKey = new ForeignKey(primaryKeyTable, primaryKeyColumn);
 			return this;
 		}
@@ -159,7 +159,7 @@ namespace Migrator.Framework.SchemaBuilder
 			return this;
 		}
 
-		public SchemaBuilder WithConstraint(ForeignKeyConstraint action)
+		public SchemaBuilder WithConstraint(ForeignKeyConstraintType action)
 		{
 			_currentColumn.Constraint = action;
 

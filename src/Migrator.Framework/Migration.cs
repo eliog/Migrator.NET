@@ -9,7 +9,7 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 namespace Migrator.Framework
 {
@@ -21,7 +21,7 @@ namespace Migrator.Framework
 	/// (eg.: delete a table).
 	/// <para>
 	/// Each migration must be decorated with the <c>[Migration(0)]</c> attribute.
-	/// Each migration number (0) must be unique, or else a 
+	/// Each migration number (0) must be unique, or else a
 	/// <c>DuplicatedVersionException</c> will be trown.
 	/// </para>
 	/// <para>
@@ -34,7 +34,7 @@ namespace Migrator.Framework
 	/// so you can easely move from one version of to another with fine grain
 	/// modifications.
 	/// You should give meaningful name to the migration class and prepend the
-	/// migration number to the filename so they keep ordered, eg.: 
+	/// migration number to the filename so they keep ordered, eg.:
 	/// <c>002_CreateTableTest.cs</c>.
 	/// </para>
 	/// <para>

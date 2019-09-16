@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>MigratorDotNet.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>DotNetProjects.Migrator</AssemblyName>
+    <RootNamespace>DotNetProjects.Migrator</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <Compile Remove="Compile\ScriptEngine.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Compile\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\config\GlobalAssemblyInfo.cs" Link="GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\default.build" Link="default.build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj" />
+    <ProjectReference Include="..\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
+  </PropertyGroup>
+
+</Project>

@@ -21,7 +21,7 @@ namespace Migrator.Framework
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="template"></param>
 		/// <param name="placeholder"></param>

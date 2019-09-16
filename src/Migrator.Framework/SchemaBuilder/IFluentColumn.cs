@@ -9,13 +9,13 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 namespace Migrator.Framework.SchemaBuilder
 {
 	public interface IFluentColumn : IColumn
 	{
-		ForeignKeyConstraint Constraint { get; set; }
+		ForeignKeyConstraintType Constraint { get; set; }
 
 		ForeignKey ForeignKey { get; set; }
 	}

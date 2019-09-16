@@ -33,6 +33,8 @@ namespace Migrator.Framework
 		/// Unsigned Column
 		/// </summary>
 		Unsigned = 32,
+
+		CaseSensitive = 64,
 		/// <summary>
 		/// Foreign Key
 		/// </summary>
@@ -40,10 +42,33 @@ namespace Migrator.Framework
 		/// <summary>
 		/// Primary Key
 		/// </summary>
-		PrimaryKey = 64 | Unsigned | NotNull,
+		PrimaryKey = 128 | Unsigned | NotNull,
 		/// <summary>
 		/// Primary key. Make the column a PrimaryKey and unsigned
 		/// </summary>
 		PrimaryKeyWithIdentity = PrimaryKey | Identity
+	}
+
+	public static class ColumnPropertyExtensions
+	{
+		public static bool IsSet(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return (fruits & flags) == flags;
+		}
+
+		public static bool IsNotSet(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return (fruits & (~flags)) == 0;
+		}
+
+		public static ColumnProperty Set(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return fruits | flags;
+		}
+
+		public static ColumnProperty Clear(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return fruits & (~flags);
+		}
 	}
 }

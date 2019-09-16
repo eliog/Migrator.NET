@@ -9,13 +9,14 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
+using Migrator.Providers;
+using Migrator.Tools;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Migrator.Framework;
-using Migrator.Tools;
 
 namespace Migrator.MigratorConsole
 {
@@ -25,16 +26,16 @@ namespace Migrator.MigratorConsole
 	/// </remarks>
 	public class MigratorConsole
 	{
-		readonly string[] args;
-		string _connectionString;
-		bool _dryrun;
-		string _dumpTo;
-		bool _list;
-		long _migrateTo = -1;
-		string _migrationsAssembly;
-		string _provider;
-		bool _trace;
-		string _defaultSchema;
+		private readonly string[] args;
+		private string _connectionString;
+		private bool _dryrun;
+		private string _dumpTo;
+		private bool _list;
+		private long _migrateTo = -1;
+		private string _migrationsAssembly;
+		private ProviderTypes _provider;
+		private bool _trace;
+		private string _defaultSchema;
 
 		/// <summary>
 		/// Builds a new console
@@ -108,9 +109,9 @@ namespace Migrator.MigratorConsole
 			{
 				long v = MigrationLoader.GetMigrationVersion(t);
 				Console.WriteLine("{0} {1} {2}",
-				                  appliedMigrations.Contains(v) ? "=>" : "  ",
-				                  v.ToString().PadLeft(3),
-				                  StringUtils.ToHumanName(t.Name)
+								  appliedMigrations.Contains(v) ? "=>" : "  ",
+								  v.ToString().PadLeft(3),
+								  StringUtils.ToHumanName(t.Name)
 					);
 			}
 		}
@@ -151,7 +152,7 @@ namespace Migrator.MigratorConsole
 
 		#region Private helper methods
 
-		void CheckArguments()
+		private void CheckArguments()
 		{
 			if (_connectionString == null)
 				throw new ArgumentException("Connection string missing", "connectionString");
@@ -159,7 +160,7 @@ namespace Migrator.MigratorConsole
 				throw new ArgumentException("Migrations assembly missing", "migrationsAssembly");
 		}
 
-		Migrator GetMigrator()
+		private Migrator GetMigrator()
 		{
 			Assembly asm = Assembly.LoadFrom(_migrationsAssembly);
 
@@ -169,7 +170,7 @@ namespace Migrator.MigratorConsole
 			return migrator;
 		}
 
-		void ParseArguments(string[] argv)
+		private void ParseArguments(string[] argv)
 		{
 			for (int i = 0; i < argv.Length; i++)
 			{
@@ -201,13 +202,13 @@ namespace Migrator.MigratorConsole
 				}
 				else
 				{
-					if (i == 0) _provider = argv[i];
+					if (i == 0) _provider = (ProviderTypes)Enum.Parse(typeof(ProviderTypes), argv[i]);
 					if (i == 1) _connectionString = argv[i];
 					if (i == 2) _migrationsAssembly = argv[i];
 				}
 			}
 		}
 
-		#endregion
+		#endregion Private helper methods
 	}
 }

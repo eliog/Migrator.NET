@@ -9,15 +9,15 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
+using Migrator.Framework.Loggers;
+using NSubstitute;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Migrator.Framework;
-using Migrator.Framework.Loggers;
-using NUnit.Framework;
-using NUnit.Mocks;
 
 namespace Migrator.Tests
 {
@@ -32,55 +32,55 @@ namespace Migrator.Tests
 			SetUpCurrentVersion(0);
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
-		Migrator _migrator;
+		private Migrator _migrator;
 
 		// Collections that contain the version that are called migrating up and down
-		static readonly List<long> _upCalled = new List<long>();
-		static readonly List<long> _downCalled = new List<long>();
+		private static readonly List<long> _upCalled = new List<long>();
+		private static readonly List<long> _downCalled = new List<long>();
 
-		void SetUpCurrentVersion(long version)
+		private void SetUpCurrentVersion(long version)
 		{
 			SetUpCurrentVersion(version, false);
 		}
 
-		void SetUpCurrentVersion(long version, bool assertRollbackIsCalled)
+		private void SetUpCurrentVersion(long version, bool assertRollbackIsCalled)
 		{
 			SetUpCurrentVersion(version, assertRollbackIsCalled, true);
 		}
 
-		void SetUpCurrentVersion(long version, bool assertRollbackIsCalled, bool includeBad)
+		private void SetUpCurrentVersion(long version, bool assertRollbackIsCalled, bool includeBad)
 		{
-			var providerMock = new DynamicMock(typeof (ITransformationProvider));
+			var providerMock = Substitute.For<ITransformationProvider>();
 
 			var appliedVersions = new List<long>();
 			for (long i = 1; i <= version; i++)
 			{
 				appliedVersions.Add(i);
 			}
-			providerMock.SetReturnValue("get_AppliedMigrations", appliedVersions);
-			providerMock.SetReturnValue("get_Logger", new Logger(false));
+			providerMock.AppliedMigrations.Returns(appliedVersions);
+			providerMock.Logger.Returns(new Logger(false));
 			if (assertRollbackIsCalled)
-				providerMock.Expect("Rollback");
+				providerMock.Received().Rollback();
 			else
-				providerMock.ExpectNoCall("Rollback");
+				providerMock.DidNotReceive().Rollback();
 
-			_migrator = new Migrator((ITransformationProvider) providerMock.MockInstance, Assembly.GetExecutingAssembly(), false);
+			_migrator = new Migrator((ITransformationProvider)providerMock, Assembly.GetExecutingAssembly(), false);
 
 			// Enlève toutes les migrations trouvée automatiquement
 			_migrator.MigrationsTypes.Clear();
 			_upCalled.Clear();
 			_downCalled.Clear();
 
-			_migrator.MigrationsTypes.Add(typeof (FirstMigration));
-			_migrator.MigrationsTypes.Add(typeof (SecondMigration));
-			_migrator.MigrationsTypes.Add(typeof (ThirdMigration));
-			_migrator.MigrationsTypes.Add(typeof (ForthMigration));
-			_migrator.MigrationsTypes.Add(typeof (SixthMigration));
+			_migrator.MigrationsTypes.Add(typeof(FirstMigration));
+			_migrator.MigrationsTypes.Add(typeof(SecondMigration));
+			_migrator.MigrationsTypes.Add(typeof(ThirdMigration));
+			_migrator.MigrationsTypes.Add(typeof(ForthMigration));
+			_migrator.MigrationsTypes.Add(typeof(SixthMigration));
 
 			if (includeBad)
-				_migrator.MigrationsTypes.Add(typeof (BadMigration));
+				_migrator.MigrationsTypes.Add(typeof(BadMigration));
 		}
 
 		public class AbstractTestMigration : Migration

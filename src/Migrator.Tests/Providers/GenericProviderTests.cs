@@ -1,5 +1,6 @@
 using Migrator.Providers;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace Migrator.Tests.Providers
 {
@@ -10,7 +11,7 @@ namespace Migrator.Tests.Providers
 		public void CanJoinColumnsAndValues()
 		{
 			var provider = new GenericTransformationProvider();
-			string result = provider.JoinColumnsAndValues(new[] {"foo", "bar"}, new[] {"123", "456"});
+			string result = provider.JoinColumnsAndValues(new[] { "foo", "bar" }, new[] { "123", "456" });
 
 			Assert.AreEqual("foo='123', bar='456'", result);
 		}
@@ -18,11 +19,21 @@ namespace Migrator.Tests.Providers
 
 	internal class GenericTransformationProvider : TransformationProvider
 	{
-		public GenericTransformationProvider() : base(null, null, null)
+		public GenericTransformationProvider() : base(null, null as string, null, "default")
 		{
 		}
 
 		public override bool ConstraintExists(string table, string name)
+		{
+			return false;
+		}
+
+		public override List<string> GetDatabases()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public override bool IndexExists(string table, string name)
 		{
 			return false;
 		}

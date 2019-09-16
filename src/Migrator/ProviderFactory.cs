@@ -9,13 +9,13 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Migrator.Framework;
 using Migrator.Providers;
+using Migrator.Providers.SqlServer;
+using System;
+using System.Data;
 
 namespace Migrator
 {
@@ -24,45 +24,43 @@ namespace Migrator
 	/// </summary>
 	public class ProviderFactory
 	{
-		static readonly Dictionary<string, Dialect> dialects = new Dictionary<string, Dialect>();
-		static readonly Assembly providerAssembly;
-
 		static ProviderFactory()
+		{ }
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="providerType"></param>
+		/// <param name="connectionString"></param>
+		/// <param name="defaultSchema"></param>
+		/// <param name="scope"></param>
+		/// <param name="providerName">for Example: System.Data.SqlClient</param>
+		/// <returns></returns>
+		public static ITransformationProvider Create(ProviderTypes providerType, string connectionString, string defaultSchema, string scope = "default", string providerName = "")
 		{
-			providerAssembly = Assembly.GetAssembly(typeof (TransformationProvider));
-			LoadDialects();
+			Dialect dialectInstance = DialectForProvider(providerType);
+
+			return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope, providerName);
 		}
 
-		public static ITransformationProvider Create(string providerName, string connectionString, string defaultSchema)
+		public static ITransformationProvider Create(ProviderTypes providerType, IDbConnection connection, string defaultSchema, string scope = "default", string providerName = "")
 		{
-			Dialect dialectInstance = DialectForProvider(providerName);
+			Dialect dialectInstance = DialectForProvider(providerType);
 
-			return dialectInstance.NewProviderForDialect(connectionString, defaultSchema);
+			return dialectInstance.NewProviderForDialect(connection, defaultSchema, scope, providerName);
 		}
 
-		public static Dialect DialectForProvider(string providerName)
+		public static Dialect DialectForProvider(ProviderTypes providerType)
 		{
-			if (String.IsNullOrEmpty(providerName))
-				return null;
-
-			foreach (string key in dialects.Keys)
+			switch (providerType)
 			{
-				if (key.IndexOf(providerName, StringComparison.InvariantCultureIgnoreCase) >= 0)
-					return dialects[key];
+				case ProviderTypes.SqlServer:
+					return (Dialect)Activator.CreateInstance(typeof(SqlServerDialect));
+				case ProviderTypes.SqlServer2005:
+					return (Dialect)Activator.CreateInstance(typeof(SqlServer2005Dialect));
 			}
+
 			return null;
-		}
-
-		public static void LoadDialects()
-		{
-			Type dialectType = typeof (Dialect);
-			foreach (Type t in providerAssembly.GetTypes())
-			{
-				if (t.IsSubclassOf(dialectType))
-				{
-					dialects.Add(t.FullName, (Dialect) Activator.CreateInstance(t, null));
-				}
-			}
 		}
 	}
 }

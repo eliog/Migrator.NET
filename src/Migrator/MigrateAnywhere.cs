@@ -1,6 +1,8 @@
+using Migrator.Framework;
+using Migrator.Providers;
 using System;
 using System.Collections.Generic;
-using Migrator.Framework;
+using System.Reflection;
 
 namespace Migrator
 {
@@ -9,7 +11,7 @@ namespace Migrator
 	/// </summary>
 	public class MigrateAnywhere : BaseMigrate
 	{
-		bool _goForward;
+		private bool _goForward;
 
 		public MigrateAnywhere(List<long> availableMigrations, ITransformationProvider provider, ILogger logger)
 			: base(availableMigrations, provider, logger)
@@ -27,8 +29,8 @@ namespace Migrator
 			get
 			{
 				return _goForward
-				       	? NextMigration()
-				       	: PreviousMigration();
+						? NextMigration()
+						: PreviousMigration();
 			}
 		}
 
@@ -37,14 +39,14 @@ namespace Migrator
 			get
 			{
 				return _goForward
-				       	? PreviousMigration()
-				       	: NextMigration();
+						? PreviousMigration()
+						: NextMigration();
 			}
 		}
 
 		public override bool Continue(long version)
 		{
-			// If we're going backwards and our current is less than the target, 
+			// If we're going backwards and our current is less than the target,
 			// reverse direction.  Also, start over at zero to make sure we catch
 			// any merged migrations that are less than the current target.
 			if (!_goForward && version >= Current)
@@ -54,7 +56,7 @@ namespace Migrator
 				Iterate();
 			}
 
-			// We always finish on going forward. So continue if we're still 
+			// We always finish on going forward. So continue if we're still
 			// going backwards, or if there are no migrations left in the forward direction.
 			return !_goForward || Current <= version;
 		}
@@ -62,7 +64,11 @@ namespace Migrator
 		public override void Migrate(IMigration migration)
 		{
 			_provider.BeginTransaction();
+#if NETSTANDARD
+			var attr = migration.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+#else
 			var attr = (MigrationAttribute) Attribute.GetCustomAttribute(migration.GetType(), typeof (MigrationAttribute));
+#endif
 
 			if (_provider.AppliedMigrations.Contains(attr.Version))
 			{
@@ -74,27 +80,35 @@ namespace Migrator
 			}
 		}
 
-		void ApplyMigration(IMigration migration, MigrationAttribute attr)
+		private void ApplyMigration(IMigration migration, MigrationAttribute attr)
 		{
 			// we're adding this one
 			_logger.MigrateUp(Current, migration.Name);
-			if (! DryRun)
+			if (!DryRun)
 			{
+				var tProvider = _provider as TransformationProvider;
+				if (tProvider != null)
+					tProvider.CurrentMigration = migration;
+
 				migration.Up();
-				_provider.MigrationApplied(attr.Version);
+				_provider.MigrationApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterUp();
 			}
 		}
 
-		void RemoveMigration(IMigration migration, MigrationAttribute attr)
+		private void RemoveMigration(IMigration migration, MigrationAttribute attr)
 		{
 			// we're removing this one
 			_logger.MigrateDown(Current, migration.Name);
-			if (! DryRun)
+			if (!DryRun)
 			{
+				var tProvider = _provider as TransformationProvider;
+				if (tProvider != null)
+					tProvider.CurrentMigration = migration;
+
 				migration.Down();
-				_provider.MigrationUnApplied(attr.Version);
+				_provider.MigrationUnApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterDown();
 			}

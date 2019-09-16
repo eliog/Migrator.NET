@@ -9,14 +9,14 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 namespace Migrator.Framework.SchemaBuilder
 {
 	public class AddColumnExpression : ISchemaBuilderExpression
 	{
-		readonly IFluentColumn _column;
-		readonly string _toTable;
+		private readonly IFluentColumn _column;
+		private readonly string _toTable;
 
 		public AddColumnExpression(string toTable, IFluentColumn column)
 		{

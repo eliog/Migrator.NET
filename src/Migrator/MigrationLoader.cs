@@ -1,7 +1,8 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using Migrator.Framework;
 
 namespace Migrator
 {
@@ -11,8 +12,8 @@ namespace Migrator
 	/// </summary>
 	public class MigrationLoader
 	{
-		readonly List<Type> _migrationsTypes = new List<Type>();
-		readonly ITransformationProvider _provider;
+		private readonly List<Type> _migrationsTypes = new List<Type>();
+		private readonly ITransformationProvider _provider;
 
 		public MigrationLoader(ITransformationProvider provider, Assembly migrationAssembly, bool trace)
 		{
@@ -29,10 +30,25 @@ namespace Migrator
 			}
 		}
 
+		public MigrationLoader(ITransformationProvider provider, bool trace, params Type[] migrationTypes)
+		{
+			_provider = provider;
+			_migrationsTypes.AddRange(migrationTypes);
+
+			if (trace)
+			{
+				provider.Logger.Trace("Loaded migrations:");
+				foreach (Type t in _migrationsTypes)
+				{
+					provider.Logger.Trace("{0} {1}", GetMigrationVersion(t).ToString().PadLeft(5), StringUtils.ToHumanName(t.Name));
+				}
+			}
+		}
+
 		/// <summary>
 		/// Returns registered migration <see cref="System.Type">types</see>.
 		/// </summary>
-		public List<Type> MigrationsTypes
+		public virtual List<Type> MigrationsTypes
 		{
 			get { return _migrationsTypes; }
 		}
@@ -40,7 +56,7 @@ namespace Migrator
 		/// <summary>
 		/// Returns the last version of the migrations.
 		/// </summary>
-		public long LastVersion
+		public virtual long LastVersion
 		{
 			get
 			{
@@ -50,7 +66,7 @@ namespace Migrator
 			}
 		}
 
-		public void AddMigrations(Assembly migrationAssembly)
+		public virtual void AddMigrations(Assembly migrationAssembly)
 		{
 			if (migrationAssembly != null)
 				_migrationsTypes.AddRange(GetMigrationTypes(migrationAssembly));
@@ -60,7 +76,7 @@ namespace Migrator
 		/// Check for duplicated version in migrations.
 		/// </summary>
 		/// <exception cref="CheckForDuplicatedVersion">CheckForDuplicatedVersion</exception>
-		public void CheckForDuplicatedVersion()
+		public virtual void CheckForDuplicatedVersion()
 		{
 			var versions = new List<long>();
 			foreach (Type t in _migrationsTypes)
@@ -84,13 +100,19 @@ namespace Migrator
 			var migrations = new List<Type>();
 			foreach (Type t in asm.GetExportedTypes())
 			{
-				var attrib =
-					(MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
-
+#if NETSTANDARD
+				var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+				if (attrib != null && typeof(IMigration).GetTypeInfo().IsAssignableFrom(t) && !attrib.Ignore)
+				{
+					migrations.Add(t);
+				}
+#else
+				var attrib = (MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
 				if (attrib != null && typeof (IMigration).IsAssignableFrom(t) && !attrib.Ignore)
 				{
 					migrations.Add(t);
 				}
+#endif
 			}
 
 			migrations.Sort(new MigrationTypeComparer(true));
@@ -105,32 +127,34 @@ namespace Migrator
 		/// <returns>Version number sepcified in the attribute</returns>
 		public static long GetMigrationVersion(Type t)
 		{
-			var attrib = (MigrationAttribute)
-			             Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
-
+			var attrib = (MigrationAttribute)Attribute.GetCustomAttribute(t, typeof(MigrationAttribute));
 			return attrib.Version;
 		}
 
 		public List<long> GetAvailableMigrations()
 		{
-			//List<int> availableMigrations = new List<int>();
 			_migrationsTypes.Sort(new MigrationTypeComparer(true));
-			return _migrationsTypes.ConvertAll(GetMigrationVersion);
+			return _migrationsTypes.Select(x => GetMigrationVersion(x)).ToList();
 		}
 
-		public IMigration GetMigration(long version)
+		public virtual IMigration GetMigration(long version)
 		{
 			foreach (Type t in _migrationsTypes)
 			{
 				if (GetMigrationVersion(t) == version)
 				{
-					var migration = (IMigration) Activator.CreateInstance(t);
+					var migration = CreateInstance(t);
 					migration.Database = _provider;
 					return migration;
 				}
 			}
 
 			return null;
+		}
+
+		public virtual IMigration CreateInstance(Type migrationType)
+		{
+			return (IMigration)Activator.CreateInstance(migrationType);
 		}
 	}
 }

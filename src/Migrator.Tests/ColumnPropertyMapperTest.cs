@@ -1,10 +1,8 @@
-using System.Data;
 using Migrator.Framework;
 using Migrator.Providers;
-using Migrator.Providers.Oracle;
-using Migrator.Providers.PostgreSQL;
 using Migrator.Providers.SqlServer;
 using NUnit.Framework;
+using System.Data;
 
 namespace Migrator.Tests
 {
@@ -12,59 +10,11 @@ namespace Migrator.Tests
 	public class ColumnPropertyMapperTest
 	{
 		[Test]
-		public void OracleCreatesNotNullSql()
-		{
-			var mapper = new ColumnPropertiesMapper(new OracleDialect(), "varchar(30)");
-			mapper.MapColumnProperties(new Column("foo", DbType.String, ColumnProperty.NotNull));
-			Assert.AreEqual("foo varchar(30) NOT NULL", mapper.ColumnSql);
-		}
-
-		[Test]
-		public void OracleCreatesSql()
-		{
-			var mapper = new ColumnPropertiesMapper(new OracleDialect(), "varchar(30)");
-			mapper.MapColumnProperties(new Column("foo", DbType.String, 0));
-			Assert.AreEqual("foo varchar(30)", mapper.ColumnSql);
-		}
-
-		[Test]
-		public void OracleIndexSqlIsNoNullWhenIndexed()
-		{
-			var mapper = new ColumnPropertiesMapper(new OracleDialect(), "char(1)");
-			mapper.MapColumnProperties(new Column("foo", DbType.StringFixedLength, 1, ColumnProperty.Indexed));
-			Assert.IsNotNull(mapper.IndexSql);
-		}
-
-		[Test]
-		public void OracleIndexSqlIsNullWhenIndexedFalse()
-		{
-			var mapper = new ColumnPropertiesMapper(new OracleDialect(), "char(1)");
-			mapper.MapColumnProperties(new Column("foo", DbType.StringFixedLength, 1, 0));
-			Assert.IsNull(mapper.IndexSql);
-		}
-
-		[Test]
-		public void PostgresIndexSqlIsNoNullWhenIndexed()
-		{
-			var mapper = new ColumnPropertiesMapper(new PostgreSQLDialect(), "char(1)");
-			mapper.MapColumnProperties(new Column("foo", DbType.StringFixedLength, 1, ColumnProperty.Indexed));
-			Assert.IsNotNull(mapper.IndexSql);
-		}
-
-		[Test]
-		public void PostgresIndexSqlIsNullWhenIndexedFalse()
-		{
-			var mapper = new ColumnPropertiesMapper(new PostgreSQLDialect(), "char(1)");
-			mapper.MapColumnProperties(new Column("foo", DbType.StringFixedLength, 1, 0));
-			Assert.IsNull(mapper.IndexSql);
-		}
-
-		[Test]
 		public void SqlServerCreatesNotNullSql()
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "varchar(30)");
 			mapper.MapColumnProperties(new Column("foo", DbType.String, ColumnProperty.NotNull));
-			Assert.AreEqual("foo varchar(30) NOT NULL", mapper.ColumnSql);
+			Assert.AreEqual("[foo] varchar(30) NOT NULL", mapper.ColumnSql);
 		}
 
 		[Test]
@@ -72,10 +22,10 @@ namespace Migrator.Tests
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "bit");
 			mapper.MapColumnProperties(new Column("foo", DbType.Boolean, 0, false));
-			Assert.AreEqual("foo bit DEFAULT 0", mapper.ColumnSql);
+			Assert.AreEqual("[foo] bit DEFAULT 0", mapper.ColumnSql);
 
 			mapper.MapColumnProperties(new Column("bar", DbType.Boolean, 0, true));
-			Assert.AreEqual("bar bit DEFAULT 1", mapper.ColumnSql);
+			Assert.AreEqual("[bar] bit DEFAULT 1", mapper.ColumnSql);
 		}
 
 		[Test]
@@ -83,7 +33,7 @@ namespace Migrator.Tests
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "varchar(30)");
 			mapper.MapColumnProperties(new Column("foo", DbType.String, 0, "'NEW'"));
-			Assert.AreEqual("foo varchar(30) DEFAULT 'NEW'", mapper.ColumnSql);
+			Assert.AreEqual("[foo] varchar(30) DEFAULT '''NEW'''", mapper.ColumnSql);
 		}
 
 		[Test]
@@ -91,7 +41,7 @@ namespace Migrator.Tests
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "varchar(30)");
 			mapper.MapColumnProperties(new Column("foo", DbType.String, 0, "NULL"));
-			Assert.AreEqual("foo varchar(30) DEFAULT NULL", mapper.ColumnSql);
+			Assert.AreEqual("[foo] varchar(30) DEFAULT 'NULL'", mapper.ColumnSql);
 		}
 
 		[Test]
@@ -99,7 +49,7 @@ namespace Migrator.Tests
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "varchar(30)");
 			mapper.MapColumnProperties(new Column("foo", DbType.String, 0));
-			Assert.AreEqual("foo varchar(30)", mapper.ColumnSql);
+			Assert.AreEqual("[foo] varchar(30)", mapper.ColumnSql);
 		}
 
 		[Test]

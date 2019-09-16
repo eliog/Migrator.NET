@@ -1,6 +1,6 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
-using Migrator.Framework;
 
 namespace Migrator.Providers
 {
@@ -31,7 +31,7 @@ namespace Migrator.Providers
 		protected string name;
 
 		/// <summary>The SQL type</summary>
-		protected string type;
+		public string type { get; private set; }
 
 		public ColumnPropertiesMapper(Dialect dialect, string type)
 		{
@@ -86,6 +86,8 @@ namespace Migrator.Providers
 
 			AddType(vals);
 
+			AddCaseSensitive(column, vals);
+
 			AddIdentity(column, vals);
 
 			AddUnsigned(column, vals);
@@ -105,6 +107,44 @@ namespace Migrator.Providers
 			AddDefaultValue(column, vals);
 
 			columnSql = String.Join(" ", vals.ToArray());
+		}
+
+		public virtual void MapColumnPropertiesWithoutDefault(Column column)
+		{
+			Name = column.Name;
+
+			indexed = PropertySelected(column.ColumnProperty, ColumnProperty.Indexed);
+
+			var vals = new List<string>();
+
+			AddName(vals);
+
+			AddType(vals);
+
+			AddCaseSensitive(column, vals);
+
+			AddIdentity(column, vals);
+
+			AddUnsigned(column, vals);
+
+			AddNotNull(column, vals);
+
+			AddNull(column, vals);
+
+			AddPrimaryKey(column, vals);
+
+			AddIdentityAgain(column, vals);
+
+			AddUnique(column, vals);
+
+			AddForeignKey(column, vals);
+
+			columnSql = String.Join(" ", vals.ToArray());
+		}
+
+		protected virtual void AddCaseSensitive(Column column, List<string> vals)
+		{
+			AddValueIfSelected(column, ColumnProperty.CaseSensitive, vals);
 		}
 
 		protected virtual void AddDefaultValue(Column column, List<string> vals)
@@ -144,7 +184,7 @@ namespace Migrator.Providers
 
 		protected virtual void AddNotNull(Column column, List<string> vals)
 		{
-			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
+			if (!PropertySelected(column.ColumnProperty, ColumnProperty.Null) && (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity))
 			{
 				AddValueIfSelected(column, ColumnProperty.NotNull, vals);
 			}

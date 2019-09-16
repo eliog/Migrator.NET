@@ -9,15 +9,15 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Configuration;
-using System.Data;
 using Migrator.Framework;
 using Migrator.Providers;
 using Migrator.Providers.SqlServer;
 using NUnit.Framework;
+using System;
+using System.Configuration;
+using System.Data;
 
 namespace Migrator.Tests.Providers
 {
@@ -34,13 +34,13 @@ namespace Migrator.Tests.Providers
 			if (constr == null)
 				throw new ArgumentNullException("SqlServerConnectionString", "No config file");
 
-			_provider = new SqlServerTransformationProvider(new SqlServerDialect(), constr, null);
+			_provider = new SqlServerTransformationProvider(new SqlServerDialect(), constr, null, "default", null);
 			_provider.BeginTransaction();
 
 			AddDefaultTable();
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
 		[Test]
 		public void ByteColumnWillBeCreatedAsBlob()

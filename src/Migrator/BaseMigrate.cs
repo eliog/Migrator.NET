@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Migrator.Framework;
+using System.Collections.Generic;
 
 namespace Migrator
 {
@@ -66,7 +66,7 @@ namespace Migrator
 
 			// See if we can find a migration that matches the requirement
 			while (migrationSearch < _availableMigrations.Count
-			       && _provider.AppliedMigrations.Contains(_availableMigrations[migrationSearch]))
+				   && _provider.AppliedMigrations.Contains(_availableMigrations[migrationSearch]))
 			{
 				migrationSearch++;
 			}
@@ -93,7 +93,7 @@ namespace Migrator
 
 			// See if we can find a migration that matches the requirement
 			while (migrationSearch > -1
-			       && !_provider.AppliedMigrations.Contains(_availableMigrations[migrationSearch]))
+				   && !_provider.AppliedMigrations.Contains(_availableMigrations[migrationSearch]))
 			{
 				migrationSearch--;
 			}

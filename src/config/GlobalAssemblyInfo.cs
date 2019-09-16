@@ -1,9 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyProduct("Migrator.Net")]
-[assembly: AssemblyCopyright("Copyright © 2011")]
-
+[assembly: AssemblyProduct("DotNetProjects.Migrator")]
+[assembly: AssemblyCopyright("Copyright © 2017")]
 [assembly: ComVisible(false)]
-
-[assembly: AssemblyVersion("3.2.2.4000")]
+#if NETSTANDARD
+[assembly: AssemblyVersion("5.0.0.1")]
+#else
+[assembly: AssemblyVersion("5.0.0.1")]
+#endif

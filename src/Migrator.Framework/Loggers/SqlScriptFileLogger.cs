@@ -6,8 +6,8 @@ namespace Migrator.Framework.Loggers
 {
 	public class SqlScriptFileLogger : ILogger, IDisposable
 	{
-		readonly ILogger _innerLogger;
-		TextWriter _streamWriter;
+		private readonly ILogger _innerLogger;
+		private TextWriter _streamWriter;
 
 		public SqlScriptFileLogger(ILogger logger, TextWriter streamWriter)
 		{
@@ -26,7 +26,7 @@ namespace Migrator.Framework.Loggers
 			}
 		}
 
-		#endregion
+		#endregion IDisposable Members
 
 		public void Log(string format, params object[] args)
 		{
@@ -87,7 +87,7 @@ namespace Migrator.Framework.Loggers
 		public void Finished(List<long> appliedVersions, long currentVersion)
 		{
 			_innerLogger.Finished(appliedVersions, currentVersion);
-			_streamWriter.Close();
+			_streamWriter.Dispose();
 		}
 	}
 }

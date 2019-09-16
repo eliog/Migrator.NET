@@ -1,9 +1,9 @@
+using Migrator.Framework.Loggers;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Migrator.Framework.Loggers;
-using NUnit.Framework;
 
 namespace Migrator.Tests.Tools
 {
@@ -19,7 +19,7 @@ namespace Migrator.Tests.Tools
 			_logger = new SqlScriptFileLogger(Logger.ConsoleLogger(), new StringWriter(_sb));
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
 		public SqlScriptFileLogger _logger;
 		public StringBuilder _sb;

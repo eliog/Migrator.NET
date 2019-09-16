@@ -9,15 +9,15 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
+using Migrator.Framework;
+using Migrator.Framework.Loggers;
+using NSubstitute;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Migrator.Framework;
-using Migrator.Framework.Loggers;
-using NUnit.Framework;
-using NUnit.Mocks;
 
 namespace Migrator.Tests
 {
@@ -32,25 +32,25 @@ namespace Migrator.Tests
 			SetUpCurrentVersion(0);
 		}
 
-		#endregion
+		#endregion Setup/Teardown
 
-		Migrator _migrator;
+		private Migrator _migrator;
 
 		// Collections that contain the version that are called migrating up and down
-		static readonly List<long> _upCalled = new List<long>();
-		static readonly List<long> _downCalled = new List<long>();
+		private static readonly List<long> _upCalled = new List<long>();
+		private static readonly List<long> _downCalled = new List<long>();
 
-		void SetUpCurrentVersion(long version)
+		private void SetUpCurrentVersion(long version)
 		{
 			SetUpCurrentVersion(version, false);
 		}
 
-		void SetUpCurrentVersion(long version, bool assertRollbackIsCalled)
+		private void SetUpCurrentVersion(long version, bool assertRollbackIsCalled)
 		{
 			SetUpCurrentVersion(version, assertRollbackIsCalled, true);
 		}
 
-		void SetUpCurrentVersion(long version, bool assertRollbackIsCalled, bool includeBad)
+		private void SetUpCurrentVersion(long version, bool assertRollbackIsCalled, bool includeBad)
 		{
 			var appliedVersions = new List<long>();
 			for (long i = 2008010195; i <= version; i += 10000)
@@ -60,33 +60,32 @@ namespace Migrator.Tests
 			SetUpCurrentVersion(version, appliedVersions, assertRollbackIsCalled, includeBad);
 		}
 
-		void SetUpCurrentVersion(long version, List<long> appliedVersions, bool assertRollbackIsCalled, bool includeBad)
+		private void SetUpCurrentVersion(long version, List<long> appliedVersions, bool assertRollbackIsCalled, bool includeBad)
 		{
-			var providerMock = new DynamicMock(typeof (ITransformationProvider));
+			var providerMock = Substitute.For<ITransformationProvider>();
 
-			providerMock.SetReturnValue("get_MaxVersion", version);
-			providerMock.SetReturnValue("get_AppliedMigrations", appliedVersions);
-			providerMock.SetReturnValue("get_Logger", new Logger(false));
+			providerMock.AppliedMigrations.Returns(appliedVersions);
+			providerMock.Logger.Returns(new Logger(false));
 			if (assertRollbackIsCalled)
-				providerMock.Expect("Rollback");
+				providerMock.Received().Rollback();
 			else
-				providerMock.ExpectNoCall("Rollback");
+				providerMock.DidNotReceive().Rollback();
 
-			_migrator = new Migrator((ITransformationProvider) providerMock.MockInstance, Assembly.GetExecutingAssembly(), false);
+			_migrator = new Migrator((ITransformationProvider)providerMock, Assembly.GetExecutingAssembly(), false);
 
 			// Enlève toutes les migrations trouvée automatiquement
 			_migrator.MigrationsTypes.Clear();
 			_upCalled.Clear();
 			_downCalled.Clear();
 
-			_migrator.MigrationsTypes.Add(typeof (FirstMigration));
-			_migrator.MigrationsTypes.Add(typeof (SecondMigration));
-			_migrator.MigrationsTypes.Add(typeof (ThirdMigration));
-			_migrator.MigrationsTypes.Add(typeof (FourthMigration));
-			_migrator.MigrationsTypes.Add(typeof (SixthMigration));
+			_migrator.MigrationsTypes.Add(typeof(FirstMigration));
+			_migrator.MigrationsTypes.Add(typeof(SecondMigration));
+			_migrator.MigrationsTypes.Add(typeof(ThirdMigration));
+			_migrator.MigrationsTypes.Add(typeof(FourthMigration));
+			_migrator.MigrationsTypes.Add(typeof(SixthMigration));
 
 			if (includeBad)
-				_migrator.MigrationsTypes.Add(typeof (BadMigration));
+				_migrator.MigrationsTypes.Add(typeof(BadMigration));
 		}
 
 		public class AbstractTestMigration : Migration
@@ -270,7 +269,7 @@ namespace Migrator.Tests
 		[Test]
 		public void PostMergeMigrateDown()
 		{
-			// Assume trunk had versions 1 2 and 4.  A branch is merged with 3, then 
+			// Assume trunk had versions 1 2 and 4.  A branch is merged with 3, then
 			// rollback to version 2.  v3 should be untouched, and v4 should be rolled back
 			var migs = new List<long>();
 			migs.Add(2008010195);
@@ -288,7 +287,7 @@ namespace Migrator.Tests
 		[Test]
 		public void PostMergeOldAndMigrateLatest()
 		{
-			// Assume trunk had versions 1 2 and 4.  A branch is merged with 3, then 
+			// Assume trunk had versions 1 2 and 4.  A branch is merged with 3, then
 			// we migrate to Latest.  v3 should be applied and nothing else done.
 			var migs = new List<long>();
 			migs.Add(2008010195);

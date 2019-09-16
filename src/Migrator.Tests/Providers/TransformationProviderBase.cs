@@ -1,7 +1,7 @@
-﻿using System;
-using System.Data;
-using Migrator.Framework;
+﻿using Migrator.Framework;
 using NUnit.Framework;
+using System;
+using System.Data;
 
 namespace Migrator.Tests.Providers
 {
@@ -24,40 +24,58 @@ namespace Migrator.Tests.Providers
 		{
 			// Because MySql doesn't support schema transaction
 			// we got to remove the tables manually... sad...
-			_provider.RemoveTable("TestTwo");
-			_provider.RemoveTable("Test");
-			_provider.RemoveTable("SchemaInfo");
+			try
+			{
+				_provider.RemoveTable("TestTwo");
+			}
+			catch (Exception)
+			{
+			}
+			try
+			{
+				_provider.RemoveTable("Test");
+			}
+			catch (Exception)
+			{
+			}
+			try
+			{
+				_provider.RemoveTable("SchemaInfo");
+			}
+			catch (Exception)
+			{
+			}
 		}
 
 		public void AddDefaultTable()
 		{
 			_provider.AddTable("TestTwo",
-			                   new Column("Id", DbType.Int32, ColumnProperty.PrimaryKey),
-			                   new Column("TestId", DbType.Int32, ColumnProperty.ForeignKey)
+							   new Column("Id", DbType.Int32, ColumnProperty.PrimaryKey),
+							   new Column("TestId", DbType.Int32, ColumnProperty.ForeignKey)
 				);
 		}
 
 		public void AddTable()
 		{
 			_provider.AddTable("Test",
-			                   new Column("Id", DbType.Int32, ColumnProperty.NotNull),
-			                   new Column("Title", DbType.String, 100, ColumnProperty.Null),
-			                   new Column("name", DbType.String, 50, ColumnProperty.Null),
-			                   new Column("blobVal", DbType.Binary, ColumnProperty.Null),
-			                   new Column("boolVal", DbType.Boolean, ColumnProperty.Null),
-			                   new Column("bigstring", DbType.String, 50000, ColumnProperty.Null)
+							   new Column("Id", DbType.Int32, ColumnProperty.NotNull),
+							   new Column("Title", DbType.String, 100, ColumnProperty.Null),
+							   new Column("name", DbType.String, 50, ColumnProperty.Null),
+							   new Column("blobVal", DbType.Binary, ColumnProperty.Null),
+							   new Column("boolVal", DbType.Boolean, ColumnProperty.Null),
+							   new Column("bigstring", DbType.String, 50000, ColumnProperty.Null)
 				);
 		}
 
 		public void AddTableWithPrimaryKey()
 		{
 			_provider.AddTable("Test",
-			                   new Column("Id", DbType.Int32, ColumnProperty.PrimaryKeyWithIdentity),
-			                   new Column("Title", DbType.String, 100, ColumnProperty.Null),
-			                   new Column("name", DbType.String, 50, ColumnProperty.NotNull),
-			                   new Column("blobVal", DbType.Binary),
-			                   new Column("boolVal", DbType.Boolean),
-			                   new Column("bigstring", DbType.String, 50000)
+							   new Column("Id", DbType.Int32, ColumnProperty.PrimaryKeyWithIdentity),
+							   new Column("Title", DbType.String, 100, ColumnProperty.Null),
+							   new Column("name", DbType.String, 50, ColumnProperty.NotNull),
+							   new Column("blobVal", DbType.Binary),
+							   new Column("boolVal", DbType.Boolean),
+							   new Column("bigstring", DbType.String, 50000)
 				);
 		}
 
@@ -152,7 +170,7 @@ namespace Migrator.Tests.Providers
 		}
 
 		[Test]
-		[ExpectedException(typeof (MigrationException))]
+		[Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedException(typeof(MigrationException))]
 		public void RenameTableToExistingTable()
 		{
 			AddTable();
@@ -170,7 +188,7 @@ namespace Migrator.Tests.Providers
 		}
 
 		[Test]
-		[ExpectedException(typeof (MigrationException))]
+		[Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedException(typeof(MigrationException))]
 		public void RenameColumnToExistingColumn()
 		{
 			AddTable();
@@ -195,7 +213,7 @@ namespace Migrator.Tests.Providers
 		{
 			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50));
 			Assert.IsTrue(_provider.ColumnExists("TestTwo", "TestId"));
-			_provider.Insert("TestTwo", new[] {"Id", "TestId"}, new object[] {1, "Not an Int val."});
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 1, "Not an Int val." });
 		}
 
 		[Test]
@@ -204,7 +222,7 @@ namespace Migrator.Tests.Providers
 			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50, ColumnProperty.Null));
 			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50, ColumnProperty.Null));
 			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50, ColumnProperty.Null));
-			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] {2, "Not an Int val." });
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 2, "Not an Int val." });
 		}
 
 		[Test]
@@ -279,6 +297,7 @@ namespace Migrator.Tests.Providers
 		/// Supprimer une colonne bit causait une erreur à cause
 		/// de la valeur par défaut.
 		/// </summary>
+
 		[Test]
 		public void RemoveBoolColumn()
 		{
@@ -314,12 +333,12 @@ namespace Migrator.Tests.Providers
 			Assert.IsTrue(_provider.TableExists("SchemaInfo"), "No SchemaInfo table created");
 
 			// Check that a "set" called after the first run works.
-			_provider.MigrationApplied(1);
+			_provider.MigrationApplied(1, null);
 			Assert.AreEqual(1, _provider.AppliedMigrations[0]);
 
 			_provider.RemoveTable("SchemaInfo");
 			// Check that a "set" call works on the first run.
-			_provider.MigrationApplied(1);
+			_provider.MigrationApplied(1, null);
 			Assert.AreEqual(1, _provider.AppliedMigrations[0]);
 			Assert.IsTrue(_provider.TableExists("SchemaInfo"), "No SchemaInfo table created");
 		}
@@ -328,6 +347,7 @@ namespace Migrator.Tests.Providers
 		/// Reproduce bug reported by Luke Melia & Daniel Berlinger :
 		/// http://macournoyer.wordpress.com/2006/10/15/migrate-nant-task/#comment-113
 		/// </summary>
+
 		[Test]
 		public void CommitTwice()
 		{
@@ -339,14 +359,15 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void InsertData()
 		{
-			_provider.Insert("TestTwo", new[] {"Id", "TestId"}, new object[] {1, "1"});
-			_provider.Insert("TestTwo", new[] {"Id", "TestId"}, new object[] {2, "2"});
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 1, "1" });
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 2, "2" });
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
 
-				Assert.IsTrue(Array.Exists(vals, delegate(int val) { return val == 1; }));
-				Assert.IsTrue(Array.Exists(vals, delegate(int val) { return val == 2; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (int val) { return val == 1; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (int val) { return val == 2; }));
 			}
 		}
 
@@ -354,14 +375,15 @@ namespace Migrator.Tests.Providers
 		public void CanInsertNullData()
 		{
 			AddTable();
-			_provider.Insert("Test", new[] {"Id", "Title"}, new[] {"1", "foo"});
-			_provider.Insert("Test", new[] {"Id", "Title"}, new[] {"2", null});
-			using (IDataReader reader = _provider.Select("Title", "Test"))
+			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "1", "foo" });
+			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "2", null });
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "Title", "Test"))
 			{
 				string[] vals = GetStringVals(reader);
 
-				Assert.IsTrue(Array.Exists(vals, delegate(string val) { return val == "foo"; }));
-				Assert.IsTrue(Array.Exists(vals, delegate(string val) { return val == null; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (string val) { return val == "foo"; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (string val) { return val == null; }));
 			}
 		}
 
@@ -369,8 +391,9 @@ namespace Migrator.Tests.Providers
 		public void CanInsertDataWithSingleQuotes()
 		{
 			AddTable();
-			_provider.Insert("Test", new[] {"Id", "Title"}, new[] {"1", "Muad'Dib"});
-			using (IDataReader reader = _provider.Select("Title", "Test"))
+			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "1", "Muad'Dib" });
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "Title", "Test"))
 			{
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual("Muad'Dib", reader.GetString(0));
@@ -383,8 +406,8 @@ namespace Migrator.Tests.Providers
 		{
 			InsertData();
 			_provider.Delete("TestTwo", "TestId", "1");
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual(2, Convert.ToInt32(reader[0]));
@@ -396,9 +419,9 @@ namespace Migrator.Tests.Providers
 		public void DeleteDataWithArrays()
 		{
 			InsertData();
-			_provider.Delete("TestTwo", new[] {"TestId"}, new [] { "1"});
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			_provider.Delete("TestTwo", new[] { "TestId" }, new[] { "1" });
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual(2, Convert.ToInt32(reader[0]));
@@ -409,18 +432,18 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void UpdateData()
 		{
-			_provider.Insert("TestTwo", new[] {"Id","TestId"}, new object[] { 20, "1"});
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 20, "1" });
 			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 21, "2" });
 
-			_provider.Update("TestTwo", new[] {"TestId"}, new[] {"3"});
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			_provider.Update("TestTwo", new[] { "TestId" }, new[] { "3" });
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
 
-				Assert.IsTrue(Array.Exists(vals, delegate(int val) { return val == 3; }));
-				Assert.IsFalse(Array.Exists(vals, delegate(int val) { return val == 1; }));
-				Assert.IsFalse(Array.Exists(vals, delegate(int val) { return val == 2; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (int val) { return val == 3; }));
+				Assert.IsFalse(Array.Exists(vals, delegate (int val) { return val == 1; }));
+				Assert.IsFalse(Array.Exists(vals, delegate (int val) { return val == 2; }));
 			}
 		}
 
@@ -428,12 +451,12 @@ namespace Migrator.Tests.Providers
 		public void CanUpdateWithNullData()
 		{
 			AddTable();
-			_provider.Insert("Test", new[] {"Id", "Title"}, new[] {"1", "foo"});
-			_provider.Insert("Test", new[] {"Id", "Title"}, new[] {"2", null});
+			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "1", "foo" });
+			_provider.Insert("Test", new[] { "Id", "Title" }, new[] { "2", null });
 
-			_provider.Update("Test", new[] {"Title"}, new string[] {null});
-
-			using (IDataReader reader = _provider.Select("Title", "Test"))
+			_provider.Update("Test", new[] { "Title" }, new string[] { null });
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "Title", "Test"))
 			{
 				string[] vals = GetStringVals(reader);
 
@@ -445,22 +468,43 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void UpdateDataWithWhere()
 		{
-			_provider.Insert("TestTwo", new[] {"Id","TestId"}, new object[] {10,"1"});
-			_provider.Insert("TestTwo", new[] {"Id","TestId"}, new object[] {11,"2"});
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 10, "1" });
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 11, "2" });
 
-			_provider.Update("TestTwo", new[] {"TestId"}, new[] { "3"}, "TestId='1'");
-
-			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
+			_provider.Update("TestTwo", new[] { "TestId" }, new[] { "3" }, "TestId='1'");
+			using (var cmd = _provider.CreateCommand())
+			using (IDataReader reader = _provider.Select(cmd, "TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
 
-				Assert.IsTrue(Array.Exists(vals, delegate(int val) { return val == 3; }));
-				Assert.IsTrue(Array.Exists(vals, delegate(int val) { return val == 2; }));
-				Assert.IsFalse(Array.Exists(vals, delegate(int val) { return val == 1; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (int val) { return val == 3; }));
+				Assert.IsTrue(Array.Exists(vals, delegate (int val) { return val == 2; }));
+				Assert.IsFalse(Array.Exists(vals, delegate (int val) { return val == 1; }));
 			}
 		}
 
-		int[] GetVals(IDataReader reader)
+		[Test]
+		public void AddIndex()
+		{
+			string indexName = "test_index";
+
+			Assert.IsFalse(_provider.IndexExists("TestTwo", indexName));
+			_provider.AddIndex(indexName, "TestTwo", "Id", "TestId");
+			Assert.IsTrue(_provider.IndexExists("TestTwo", indexName));
+		}
+
+		[Test]
+		public void RemoveIndex()
+		{
+			string indexName = "test_index";
+
+			Assert.IsFalse(_provider.IndexExists("TestTwo", indexName));
+			_provider.AddIndex(indexName, "TestTwo", "Id", "TestId");
+			_provider.RemoveIndex("TestTwo", indexName);
+			Assert.IsFalse(_provider.IndexExists("TestTwo", indexName));
+		}
+
+		private int[] GetVals(IDataReader reader)
 		{
 			var vals = new int[2];
 			Assert.IsTrue(reader.Read());
@@ -470,7 +514,7 @@ namespace Migrator.Tests.Providers
 			return vals;
 		}
 
-		string[] GetStringVals(IDataReader reader)
+		private string[] GetStringVals(IDataReader reader)
 		{
 			var vals = new string[2];
 			Assert.IsTrue(reader.Read());

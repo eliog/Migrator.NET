@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Migrator.Framework.Support;
 using System.Data;
-using System.Linq;
-using System.Text;
-using Migrator.Framework.Support;
 
 namespace Migrator.Framework
 {
@@ -23,7 +20,7 @@ namespace Migrator.Framework
 			return AddManyToManyJoiningTable(database, schema, lhsTableName, lhsKey, rhsTableName, rhsKey, joiningTable);
 		}
 
-		static string GetNameOfJoiningTable(string lhsTableName, string rhsTableName)
+		private static string GetNameOfJoiningTable(string lhsTableName, string rhsTableName)
 		{
 			return (Inflector.Singularize(lhsTableName) ?? lhsTableName) + (Inflector.Pluralize(rhsTableName) ?? rhsTableName);
 		}
@@ -49,15 +46,15 @@ namespace Migrator.Framework
 			string rhsTableNameWithSchema = TransformationProviderUtility.FormatTableName(schema, rhsTableName);
 
 			string lhsFkName = TransformationProviderUtility.CreateForeignKeyName(lhsTableName, joiningTableName);
-			database.AddForeignKey(lhsFkName, joiningTableWithSchema, joinLhsKey, lhsTableNameWithSchema, lhsKey, ForeignKeyConstraint.NoAction);
+			database.AddForeignKey(lhsFkName, joiningTableWithSchema, joinLhsKey, lhsTableNameWithSchema, lhsKey, ForeignKeyConstraintType.NoAction);
 
 			string rhsFkName = TransformationProviderUtility.CreateForeignKeyName(rhsTableName, joiningTableName);
-			database.AddForeignKey(rhsFkName, joiningTableWithSchema, joinRhsKey, rhsTableNameWithSchema, rhsKey, ForeignKeyConstraint.NoAction);
+			database.AddForeignKey(rhsFkName, joiningTableWithSchema, joinRhsKey, rhsTableNameWithSchema, rhsKey, ForeignKeyConstraintType.NoAction);
 
 			return database;
 		}
 
-		static string ShortenKeyNameToBeSuitableForOracle(string pkName)
+		private static string ShortenKeyNameToBeSuitableForOracle(string pkName)
 		{
 			return TransformationProviderUtility.AdjustNameToSize(pkName, TransformationProviderUtility.MaxLengthForForeignKeyInOracle, false);
 		}
@@ -81,5 +78,4 @@ namespace Migrator.Framework
 			return database;
 		}
 	}
-
 }

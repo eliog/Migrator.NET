@@ -1,11 +1,23 @@
-namespace Migrator.Framework
+﻿namespace Migrator.Framework
 {
-	public enum ForeignKeyConstraint
+	public class ForeignKeyConstraint : IDbField
 	{
-		Cascade,
-		SetNull,
-		NoAction,
-		Restrict,
-		SetDefault
+		public ForeignKeyConstraint()
+		{ }
+
+		public ForeignKeyConstraint(string name, string table, string[] columns, string pkTable, string[] pkColumns)
+		{
+			this.Name = name;
+			this.Table = table;
+			this.Columns = columns;
+			this.PkTable = pkTable;
+			this.PkColumns = pkColumns;
+		}
+
+		public string Name { get; set; }
+		public string Table { get; set; }
+		public string[] Columns { get; set; }
+		public string PkTable { get; set; }
+		public string[] PkColumns { get; set; }
 	}
 }

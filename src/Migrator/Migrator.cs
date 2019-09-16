@@ -9,13 +9,15 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
+using Migrator.Providers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Migrator
 {
@@ -24,30 +26,50 @@ namespace Migrator
 	/// </summary>
 	public class Migrator
 	{
-		readonly MigrationLoader _migrationLoader;
-		readonly ITransformationProvider _provider;
+		private readonly MigrationLoader _migrationLoader;
+		private readonly ITransformationProvider _provider;
 
-		string[] _args;
+		private string[] _args;
 		protected bool _dryrun;
-		ILogger _logger = new Logger(false);
+		private ILogger _logger = new Logger(false);
 
-		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
 			: this(provider, connectionString, defaultSchema, migrationAssembly, false)
 		{
 		}
 
-		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, params Type[] migrationTypes)
+			: this(provider, connectionString, defaultSchema, false, migrationTypes)
+		{
+		}
+
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace)
 		{
 		}
 
-		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, bool trace, params Type[] migrationTypes)
+			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), trace, migrationTypes)
+		{
+		}
+
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace, logger)
+		{
+		}
+
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, bool trace, ILogger logger, params Type[] migrationTypes)
+			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), trace, logger, migrationTypes)
 		{
 		}
 
 		public Migrator(ITransformationProvider provider, Assembly migrationAssembly, bool trace)
 			: this(provider, migrationAssembly, trace, new Logger(trace, new ConsoleWriter()))
+		{
+		}
+
+		public Migrator(ITransformationProvider provider, bool trace, params Type[] migrationTypes)
+			: this(provider, trace, new Logger(trace, new ConsoleWriter()), migrationTypes)
 		{
 		}
 
@@ -57,6 +79,24 @@ namespace Migrator
 			Logger = logger;
 
 			_migrationLoader = new MigrationLoader(provider, migrationAssembly, trace);
+			_migrationLoader.CheckForDuplicatedVersion();
+		}
+
+		public Migrator(ITransformationProvider provider, bool trace, ILogger logger, params Type[] migrationTypes)
+		{
+			_provider = provider;
+			Logger = logger;
+
+			_migrationLoader = new MigrationLoader(provider, trace, migrationTypes);
+			_migrationLoader.CheckForDuplicatedVersion();
+		}
+
+		public Migrator(ITransformationProvider provider, ILogger logger, MigrationLoader migrationLoader)
+		{
+			_provider = provider;
+			Logger = logger;
+
+			_migrationLoader = migrationLoader;
 			_migrationLoader.CheckForDuplicatedVersion();
 		}
 
@@ -72,6 +112,23 @@ namespace Migrator
 		public List<Type> MigrationsTypes
 		{
 			get { return _migrationLoader.MigrationsTypes; }
+		}
+
+		/// <summary>
+		/// Set or get the Schema Info table name, where the migration applied are saved
+		/// Default is: SchemaInfo
+		/// </summary>
+		public string SchemaInfoTableName
+		{
+			get
+			{
+				return _provider.SchemaInfoTable;
+			}
+
+			set
+			{
+				_provider.SchemaInfoTable = value;
+			}
 		}
 
 		/// <summary>
@@ -99,6 +156,21 @@ namespace Migrator
 		{
 			get { return _dryrun; }
 			set { _dryrun = value; }
+		}
+
+		public long AssemblyLastMigrationVersion
+		{
+			get { return _migrationLoader.LastVersion; }
+		}
+
+		public long? LastAppliedMigrationVersion
+		{
+			get
+			{
+				if (AppliedMigrations.Count() == 0)
+					return null;
+				return AppliedMigrations.Max();
+			}
 		}
 
 		/// <summary>

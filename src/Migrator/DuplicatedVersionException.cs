@@ -9,7 +9,7 @@
 //License for the specific language governing rights and limitations
 //under the License.
 
-#endregion
+#endregion License
 
 using System;
 
@@ -18,7 +18,10 @@ namespace Migrator
 	/// <summary>
 	/// Exception thrown when a migration number is not unique.
 	/// </summary>
-	[Serializable]
+#if NETSTANDARD
+#else
+    [Serializable]
+#endif
 	public class DuplicatedVersionException : Exception
 	{
 		public DuplicatedVersionException(long version)

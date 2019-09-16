@@ -1,7 +1,8 @@
+using Migrator.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Migrator.Framework;
+using System.Linq;
 
 namespace Migrator.Providers
 {
@@ -33,7 +34,7 @@ namespace Migrator.Providers
 	/// would result in
 	/// <code>
 	///		Names.Get(DbType)			// --> "VARCHAR($l)" (will cause trouble)
-	///		Names.Get(DbType,100)		// --> "VARCHAR(100)" 
+	///		Names.Get(DbType,100)		// --> "VARCHAR(100)"
 	///		Names.Get(DbType,1000)	// --> "VARCHAR(1000)"
 	///		Names.Get(DbType,10000)	// --> "VARCHAR(10000)"
 	/// </code>
@@ -44,10 +45,30 @@ namespace Migrator.Providers
 		public const string PrecisionPlaceHolder = "$p";
 		public const string ScalePlaceHolder = "$s";
 
-		readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
+		private readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
 
-		readonly Dictionary<DbType, SortedList<int, string>> weighted =
+		private readonly Dictionary<string, DbType> aliases = new Dictionary<string, DbType>();
+
+		private readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
+
+		public DbType GetDbType(string type)
+		{
+			type = type.Trim().ToLower();
+			var retval = defaults.Where(x => x.Value.Trim().ToLower().StartsWith(type)).Select(x => x.Key);
+			if (retval.Any())
+				return retval.First();
+			retval = weighted.Where(x => x.Value.Where(y => y.Value.Trim().ToLower().StartsWith(type)).Any()).Select(x => x.Key);
+			if (retval.Any())
+				return retval.First();
+
+			var alias = aliases.Where(x => x.Key.Trim().ToLower().StartsWith(type));
+
+			if (alias.Any())
+				return alias.First().Value;
+
+			return DbType.AnsiString;
+		}
 
 		/// <summary>
 		/// Get default type name for specified type
@@ -90,10 +111,10 @@ namespace Migrator.Providers
 				}
 			}
 			//Could not find a specific type for the size, using the default
-			return Replace(Get(typecode), size, precision, scale);
+			return Get(typecode);
 		}
 
-		static string Replace(string type, int size, int precision, int scale)
+		private static string Replace(string type, int size, int precision, int scale)
 		{
 			type = StringUtils.ReplaceOnce(type, LengthPlaceHolder, size.ToString());
 			type = StringUtils.ReplaceOnce(type, ScalePlaceHolder, scale.ToString());
@@ -118,13 +139,18 @@ namespace Migrator.Providers
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="typecode"></param>
 		/// <param name="value"></param>
 		public void Put(DbType typecode, string value)
 		{
 			defaults[typecode] = value;
+		}
+
+		public void PutAlias(DbType typecode, string value)
+		{
+			aliases[value] = typecode;
 		}
 	}
 }
