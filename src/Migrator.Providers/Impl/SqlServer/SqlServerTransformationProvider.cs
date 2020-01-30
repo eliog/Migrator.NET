@@ -349,13 +349,23 @@ FROM    sys.[indexes] Ind
 		{
 			ExecuteNonQuery(string.Format("USE [master]" + System.Environment.NewLine + "DROP DATABASE {0}", databaseName));
 		}
-
+		
 		public override void RemoveColumn(string table, string column)
 		{
+			var existingColumn = GetColumnByName(table, column);
+
+			if (!ColumnExists(table, column, true))
+			{
+				throw new MigrationException(string.Format("The table '{0}' does not have a column named '{1}'", table, column));
+			}
 			DeleteColumnConstraints(table, column);
 			DeleteColumnIndexes(table, column);
 			RemoveColumnDefaultValue(table, column);
-			base.RemoveColumn(table, column);
+			
+
+			
+			ExecuteNonQuery(String.Format("ALTER TABLE [{0}] DROP COLUMN {1} ", table, Dialect.Quote(existingColumn.Name)));
+			 
 		}
 
 		public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
