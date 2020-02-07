@@ -360,7 +360,9 @@ FROM    sys.[indexes] Ind
 			}
 			DeleteColumnConstraints(table, column);
 			DeleteColumnIndexes(table, column);
+			DeleteColumnStatistics(table, column);
 			RemoveColumnDefaultValue(table, column);
+			
 			
 
 			
@@ -432,6 +434,38 @@ FROM    sys.[indexes] Ind
 			}
 		}
 
+		private void DeleteColumnStatistics(string table, string column)
+		{
+			var sqlIndex = this.FindStatistics(table, column);
+			var indexes = new List<string>();
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, sqlIndex))
+			{
+				while (reader.Read())
+				{
+					indexes.Add(reader.GetString(0));
+				}
+			}
+			// Can't share the connection so two phase modif
+			foreach (string index in indexes)
+			{
+				this.RemoveStatistics(table, index);
+			}
+		}
+		protected virtual string FindStatistics(string table, string column)
+		{
+			return string.Format(@"
+select
+   s.name as statisticsName, *
+from sys.stats s 
+join sys.objects o on o.object_id = s.object_id
+join sys.stats_columns sc
+	on sc.stats_id = s.stats_id and sc.object_id = s.object_id
+join sys.columns c
+	on c.column_id = sc.column_id and c.object_id = s.object_id
+where o.[Name] = '{0}'
+and c.[Name] = '{1}' and user_created = 1", table, column);
+		}
 		protected virtual string FindIndexes(string table, string column)
 		{
 			return string.Format(@"
@@ -478,6 +512,11 @@ AND CU.COLUMN_NAME = '{1}'",
 			{
 				ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", QuoteConstraintNameIfRequired(name), QuoteTableNameIfRequired(table)));
 			}
+		}
+
+		public void RemoveStatistics(string table, string name)
+		{
+			ExecuteNonQuery($"DROP STATISTICS [{table}].[{name}]");
 		}
 
 		protected override string GetPrimaryKeyConstraintName(string table)
