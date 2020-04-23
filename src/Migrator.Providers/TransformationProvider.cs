@@ -773,7 +773,7 @@ namespace Migrator.Providers
 
 		public virtual int ExecuteNonQuery(string sql)
 		{
-			return ExecuteNonQuery(sql, 30);
+			return ExecuteNonQuery(sql, 900);
 		}
 
 		public virtual int ExecuteNonQuery(string sql, int timeout)
